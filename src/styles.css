@@ -1,0 +1,77 @@
+@import "tailwindcss" source(none);
+@source "../src";
+
+@theme {
+  --color-brand-primary: #1B2A6B;
+  --color-brand-secondary: #5B3FD6;
+  --color-bg: #FFFFFF;
+  --color-surface: #F8FAFC;
+  --color-surface-2: #F1F5F9;
+  --color-text: #1F2937;
+  --color-muted: #6B7280;
+  --color-border: #E5E7EB;
+  --color-success: #16A34A;
+  --color-error: #DC2626;
+  --color-warning: #D97706;
+
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Sora", "Inter", ui-sans-serif, system-ui, sans-serif;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+
+  --shadow-soft: 0 1px 2px rgba(15, 23, 42, 0.04), 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-card: 0 4px 16px -4px rgba(15, 23, 42, 0.08), 0 2px 6px -2px rgba(15, 23, 42, 0.04);
+  --shadow-lift: 0 12px 32px -8px rgba(27, 42, 107, 0.18), 0 4px 12px -4px rgba(91, 63, 214, 0.10);
+}
+
+html, body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* { border-color: var(--color-border); }
+
+/* Focus ring */
+*:focus-visible {
+  outline: 2px solid var(--color-brand-secondary);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Selection */
+::selection { background: color-mix(in oklab, var(--color-brand-secondary) 25%, transparent); }
+
+/* Scrollbar minimalism */
+@media (pointer: fine) {
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 8px; border: 2px solid #fff; }
+  ::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+}
+
+@utility gradient-brand {
+  background-image: linear-gradient(135deg, #1B2A6B 0%, #5B3FD6 100%);
+}
+@utility gradient-text {
+  background-image: linear-gradient(135deg, #1B2A6B 0%, #5B3FD6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+@utility surface-card {
+  background: #fff;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@utility animate-fade-in { animation: fade-in 0.5s ease-out both; }
