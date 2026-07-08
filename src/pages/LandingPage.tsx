@@ -114,12 +114,16 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* Featured jobs */}
+      {/* Recent jobs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="flex items-end justify-between mb-6">
           <div>
-            <h2 className="font-display text-2xl sm:text-3xl font-bold">Featured opportunities</h2>
-            <p className="text-[#6B7280] mt-1">Hand-picked roles updated daily.</p>
+            <h2 className="font-display text-2xl sm:text-3xl font-bold">
+              Most Recent Opportunities
+            </h2>
+            <p className="text-[#6B7280] mt-1">
+              Fresh opportunities, added to the board regularly.
+            </p>
           </div>
           <Link
             to="/jobs"

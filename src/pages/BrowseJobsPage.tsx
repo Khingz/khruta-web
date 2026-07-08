@@ -4,13 +4,13 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 import { JobCard } from "@/components/JobCard";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
-import { useQuery } from "@tanstack/react-query";
-import { jobsApi, type JobFilters } from "@/api/jobsApi";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { SlidersHorizontal, Search as SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
+import { jobsQueryOptions } from "@/routes/jobs.index";
+import type { JobFilters } from "@/server/jobs/jobs.server";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
@@ -20,18 +20,14 @@ export function BrowseJobsPage() {
   const filters: JobFilters = {
     q: search.q,
     location: search.location,
-    category: search.category,
+    department: search.department,
     type: search.type,
-    remote: search.remote,
-    level: search.level,
-    page: Number(search.page) || 1,
+    page: search.page ?? 1,
     pageSize: 10,
   };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["jobs", filters],
-    queryFn: () => jobsApi.list(filters),
-  });
+  const { data: response } = useSuspenseQuery(jobsQueryOptions(filters));
+  const jobs = response.data;
 
   const setParam = (patch: Partial<JobFilters>) => {
     const next = { ...search, ...patch, page: 1 };
@@ -64,9 +60,7 @@ export function BrowseJobsPage() {
 
         <div className="min-w-0">
           <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-[#6B7280]">
-              {isLoading ? "Searching…" : `${data?.total ?? 0} jobs found`}
-            </p>
+            <p className="text-sm text-[#6B7280]">{`${jobs.totalRecords} jobs found`}</p>
             <Button
               variant="outline"
               size="sm"
@@ -78,11 +72,7 @@ export function BrowseJobsPage() {
             </Button>
           </div>
 
-          {isLoading ? (
-            <div className="py-16">
-              <LoadingSpinner label="Loading jobs…" />
-            </div>
-          ) : !data?.data.length ? (
+          {!jobs.items.length ? (
             <EmptyState
               icon={<SearchIcon className="h-5 w-5" />}
               title="No jobs match your search"
@@ -91,15 +81,28 @@ export function BrowseJobsPage() {
           ) : (
             <>
               <div className="flex flex-col gap-3">
-                {data.data.map((j) => (
-                  <JobCard key={j.id} job={j} />
+                {jobs.items.map((j: any) => (
+                  <JobCard
+                    key={j.Id}
+                    job={{
+                      id: j.Id,
+                      title: j.Title,
+                      company: j.CompanyName,
+                      location: j.Location,
+                      type: j.Type,
+                      postedAt: j.OpenDate,
+                      salaryMin: j.MinOffer,
+                      salaryMax: j.MaxOffer,
+                      currency: "USD",
+                    }}
+                  />
                 ))}
               </div>
               <div className="mt-8">
                 <Pagination
-                  page={filters.page!}
-                  pageSize={filters.pageSize!}
-                  total={data.total}
+                  page={jobs.pageNumber}
+                  pageSize={jobs.pageSize}
+                  total={jobs.totalRecords}
                   onChange={(p) => navigate({ to: "/jobs", search: { ...search, page: p } as any })}
                 />
               </div>

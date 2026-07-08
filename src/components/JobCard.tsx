@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Bookmark, MapPin, Briefcase, Clock } from "lucide-react";
-import type { Job } from "@/types";
+import type { Job, JobCompact } from "@/types";
 import { formatSalary, timeAgo, cn } from "@/utils/format";
 import { Badge } from "./primitives/Badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { jobsApi } from "@/api/jobsApi";
 
-export function JobCard({ job, compact = false }: { job: Job; compact?: boolean }) {
+export function JobCard({ job, compact = false }: { job: JobCompact; compact?: boolean }) {
   const qc = useQueryClient();
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],
@@ -76,8 +76,6 @@ export function JobCard({ job, compact = false }: { job: Job; compact?: boolean 
           </div>
           {!compact && (
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <Badge tone="brand">{job.remote}</Badge>
-              <Badge>{job.experienceLevel}</Badge>
               <span className="ml-auto text-sm font-medium text-[#1F2937]">
                 {formatSalary(job.salaryMin, job.salaryMax, job.currency)}
               </span>
