@@ -9,9 +9,9 @@ import { useSearch, useNavigate } from "@tanstack/react-router";
 import { SlidersHorizontal, Search as SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
-import type { JobFilters } from "@/server/jobs/jobs.server";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { jobsQueryOptions } from "@/queries/job.queries";
+import { JobFilters } from "@/server/jobs/jobs.functions";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
@@ -25,9 +25,11 @@ export function BrowseJobsPage() {
     type: search.type,
     page: search.page ?? 1,
     pageSize: 10,
+    minOffer: search.minOffer,
+    maxOffer: search.maxOffer,
   };
 
-  const { data: response, isLoading } = useQuery(jobsQueryOptions());
+  const { data: response, isLoading } = useQuery(jobsQueryOptions(filters));
   const jobs = response?.data;
 
   const setParam = (patch: Partial<JobFilters>) => {

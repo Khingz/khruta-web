@@ -1,25 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { getSalesforceToken } from "../salesforce.server";
-import { z } from "zod";
-
-const JobFiltersSchema = z.object({
-  q: z.string().optional(),
-  location: z.string().optional(),
-  department: z.string().optional(),
-  type: z.string().optional(),
-  page: z.number().optional(),
-  pageSize: z.number().optional(),
-  minOffer: z.number().optional(),
-  maxOffer: z.number().optional(),
-});
-
-export type JobFilters = z.infer<typeof JobFiltersSchema>;
-
-export const JobIdSchema = z
-  .string()
-  .regex(/^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/, "Invalid Salesforce ID format");
-
-export type JobId = z.infer<typeof JobIdSchema>;
+import { JobFiltersSchema, JobIdSchema } from "./jobs.functions";
 
 // Get all jobs or add filter condition
 export const getJobOpenings = createServerFn()
