@@ -6,8 +6,8 @@ import { useParams, Link } from "@tanstack/react-router";
 import { formatSalary, timeAgo } from "@/utils/format";
 import { MapPin, Briefcase, Clock, Bookmark, Share2, Check, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/Toast";
-import { jobQueryOptions } from "@/routes/jobs.$id";
 import { JobDetailSkeleton } from "@/components/loadingSpinners/JobDetailSkeleton";
+import { jobQueryOptions } from "@/queries/job.queries";
 
 export function JobDetailsPage() {
   const { id } = useParams({ from: "/jobs/$id" });

@@ -9,9 +9,9 @@ import { useSearch, useNavigate } from "@tanstack/react-router";
 import { SlidersHorizontal, Search as SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
-import { jobsQueryOptions } from "@/routes/jobs.index";
 import type { JobFilters } from "@/server/jobs/jobs.server";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
+import { jobsQueryOptions } from "@/queries/job.queries";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
@@ -64,7 +64,7 @@ export function BrowseJobsPage() {
         ) : (
           <div className="min-w-0">
             <div className="flex items-center justify-between mb-4">
-              <p className="text-sm text-[#6B7280]">{`${jobs.totalRecords} jobs found`}</p>
+              <p className="text-sm text-[#6B7280]">{`${jobs && jobs.totalRecords} jobs found`}</p>
               <Button
                 variant="outline"
                 size="sm"
