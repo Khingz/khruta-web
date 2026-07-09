@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
 import { EmptyState } from "@/components/EmptyState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { offersApi } from "@/api/offersApi";
 import { Gift, Calendar, DollarSign, Briefcase } from "lucide-react";

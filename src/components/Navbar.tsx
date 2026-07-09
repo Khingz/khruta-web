@@ -1,22 +1,8 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import {
-  Bell,
-  Menu,
-  X,
-  LogOut,
-  User as UserIcon,
-  Briefcase,
-  Bookmark,
-  Gift,
-  FileText,
-  Settings,
-  LayoutDashboard,
-} from "lucide-react";
+import { Bell } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./primitives/Button";
-import { Avatar } from "./Avatar";
-import { useAuth } from "@/contexts/AuthContext";
 import { cn } from "@/utils/format";
 import { Show, UserButton } from "@clerk/tanstack-react-start";
 import { CurrentUser, getCurrentUser } from "@/lib/auth.function";

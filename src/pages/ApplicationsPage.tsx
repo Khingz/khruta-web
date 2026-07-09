@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Badge } from "@/components/primitives/Badge";
 import { Button } from "@/components/primitives/Button";
 import { EmptyState } from "@/components/EmptyState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { applicationsApi } from "@/api/applicationsApi";
 import { Link } from "@tanstack/react-router";

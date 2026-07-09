@@ -1,7 +1,7 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { JobCard } from "@/components/JobCard";
 import { EmptyState } from "@/components/EmptyState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
 import { useQuery } from "@tanstack/react-query";
 import { jobsApi } from "@/api/jobsApi";

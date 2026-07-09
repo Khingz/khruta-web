@@ -4,13 +4,14 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 import { JobCard } from "@/components/JobCard";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
-import { useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { SlidersHorizontal, Search as SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { jobsQueryOptions } from "@/routes/jobs.index";
 import type { JobFilters } from "@/server/jobs/jobs.server";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
@@ -26,8 +27,8 @@ export function BrowseJobsPage() {
     pageSize: 10,
   };
 
-  const { data: response } = useSuspenseQuery(jobsQueryOptions(filters));
-  const jobs = response.data;
+  const { data: response, isLoading } = useQuery(jobsQueryOptions());
+  const jobs = response?.data;
 
   const setParam = (patch: Partial<JobFilters>) => {
     const next = { ...search, ...patch, page: 1 };
@@ -58,57 +59,63 @@ export function BrowseJobsPage() {
           <FilterSidebar filters={filters} onChange={(f) => setParam(f)} />
         </div>
 
-        <div className="min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-[#6B7280]">{`${jobs.totalRecords} jobs found`}</p>
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<SlidersHorizontal className="h-4 w-4" />}
-              className="lg:hidden"
-              onClick={() => setMobileFilters(true)}
-            >
-              Filters
-            </Button>
-          </div>
+        {isLoading ? (
+          <LoadingSpinner size={40} label="Loading Job Openings" />
+        ) : (
+          <div className="min-w-0">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-[#6B7280]">{`${jobs.totalRecords} jobs found`}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={<SlidersHorizontal className="h-4 w-4" />}
+                className="lg:hidden"
+                onClick={() => setMobileFilters(true)}
+              >
+                Filters
+              </Button>
+            </div>
 
-          {!jobs.items.length ? (
-            <EmptyState
-              icon={<SearchIcon className="h-5 w-5" />}
-              title="No jobs match your search"
-              description="Try removing a filter or searching for a broader term."
-            />
-          ) : (
-            <>
-              <div className="flex flex-col gap-3">
-                {jobs.items.map((j: any) => (
-                  <JobCard
-                    key={j.Id}
-                    job={{
-                      id: j.Id,
-                      title: j.Title,
-                      company: j.CompanyName,
-                      location: j.Location,
-                      type: j.Type,
-                      postedAt: j.OpenDate,
-                      salaryMin: j.MinOffer,
-                      salaryMax: j.MaxOffer,
-                      currency: "USD",
-                    }}
+            {!jobs.items.length ? (
+              <EmptyState
+                icon={<SearchIcon className="h-5 w-5" />}
+                title="No jobs match your search"
+                description="Try removing a filter or searching for a broader term."
+              />
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {jobs.items.map((j: any) => (
+                    <JobCard
+                      key={j.Id}
+                      job={{
+                        id: j.Id,
+                        title: j.Title,
+                        company: j.CompanyName,
+                        location: j.Location,
+                        type: j.Type,
+                        postedAt: j.OpenDate,
+                        salaryMin: j.MinOffer,
+                        salaryMax: j.MaxOffer,
+                        currency: "USD",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-8">
+                  <Pagination
+                    page={jobs.pageNumber}
+                    pageSize={jobs.pageSize}
+                    total={jobs.totalRecords}
+                    onChange={(p) =>
+                      navigate({ to: "/jobs", search: { ...search, page: p } as any })
+                    }
                   />
-                ))}
-              </div>
-              <div className="mt-8">
-                <Pagination
-                  page={jobs.pageNumber}
-                  pageSize={jobs.pageSize}
-                  total={jobs.totalRecords}
-                  onChange={(p) => navigate({ to: "/jobs", search: { ...search, page: p } as any })}
-                />
-              </div>
-            </>
-          )}
-        </div>
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {mobileFilters && (

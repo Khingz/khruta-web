@@ -11,6 +11,8 @@ export const jobsQueryOptions = (filters: JobFilters = {}) =>
   });
 
 export const Route = createFileRoute("/jobs/")({
-  loader: ({ context }) => context.queryClient.ensureQueryData(jobsQueryOptions()),
+  loader: ({ context }) => {
+    context.queryClient.prefetchQuery(jobsQueryOptions());
+  },
   component: BrowseJobsPage,
 });

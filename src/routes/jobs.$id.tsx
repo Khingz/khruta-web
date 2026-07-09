@@ -12,7 +12,7 @@ export const jobQueryOptions = (id: JobId) =>
 
 export const Route = createFileRoute("/jobs/$id")({
   loader: async ({ context, params }) => {
-    context.queryClient.ensureQueryData(jobQueryOptions(params.id));
+    context.queryClient.prefetchQuery(jobQueryOptions(params.id));
   },
   component: JobDetailsPage,
 });
