@@ -7,9 +7,9 @@ export function Footer() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 grid grid-cols-2 md:grid-cols-5 gap-8">
         <div className="col-span-2">
           <Logo />
-          <p className="mt-3 text-sm text-[#6B7280] max-w-xs">
+          <p className="text-sm text-[#6B7280] max-w-xs">
             A premium recruitment platform built around candidates. Find roles, track progress,
-            accept offers — all in one polished workspace.
+            accept offers, all in one polished workspace.
           </p>
         </div>
         <div>

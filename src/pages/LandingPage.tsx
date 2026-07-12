@@ -8,12 +8,16 @@ import { FeaturesSection } from "@/components/landingScreen/FeaturesSection";
 import { HowSection } from "@/components/landingScreen/HowSection";
 import { TestimonialSection } from "./TestimonialSection";
 import { CTASection } from "@/components/landingScreen/CTASection";
+import { jobsQueryOptions } from "@/queries/job.queries";
 
 export function LandingPage() {
   const { data: featured = [] } = useQuery({
     queryKey: ["featured"],
     queryFn: () => jobsApi.featured(),
   });
+
+  const { data: response, isLoading } = useQuery(jobsQueryOptions());
+  const recentJobs = response?.data?.items;
 
   return (
     <PublicLayout>
@@ -24,7 +28,7 @@ export function LandingPage() {
 
       {/* Recent jobs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
-        <RecentJobs recentJobs={featured} />
+        {<RecentJobs recentJobs={recentJobs} isLoading={isLoading} />}
       </section>
 
       {/* Categories */}

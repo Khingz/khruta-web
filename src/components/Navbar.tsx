@@ -1,11 +1,11 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { Link, useRouterState } from "@tanstack/react-router";
 import { Bell } from "lucide-react";
 import { Logo } from "./Logo";
 import { Button } from "./primitives/Button";
 import { cn } from "@/utils/format";
 import { Show, UserButton } from "@clerk/tanstack-react-start";
-import { CurrentUser, getCurrentUser } from "@/lib/auth.function";
+import { useSuspenseQuery } from "@tanstack/react-query";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
 
 const publicLinks = [
   { to: "/jobs", label: "Browse jobs" },
@@ -15,15 +15,13 @@ const publicLinks = [
 
 export function Navbar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [user, setUser] = useState<CurrentUser | null>(null);
 
-  useEffect(() => {
-    getCurrentUser().then((data) => setUser(data));
-  }, []);
+  const { data: response } = useSuspenseQuery(candidateProfileQuery);
+  const candidate = response?.data ?? null;
 
   return (
     <header className="sticky top-0 z-40 bg-white/80 backdrop-blur-lg border-b border-[#E5E7EB]">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center gap-6">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center gap-6">
         <Link to="/" className="shrink-0">
           <Logo />
         </Link>
@@ -60,11 +58,13 @@ export function Navbar() {
               <Bell className="h-5 w-5" />
               <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#5B3FD6]" />
             </Link>
-            {user && (
+            {candidate && (
               <div className="relative">
                 <button className="flex items-center gap-2 pl-1 pr-3 py-1 rounded-full border border-[#E5E7EB] hover:bg-[#F8FAFC]">
                   <UserButton />
-                  <span className="text-sm font-medium">{user!.firstName}</span>
+                  <span className="text-sm font-medium">
+                    {candidate.fullname?.split(" ")[0] ?? candidate.email}
+                  </span>
                 </button>
               </div>
             )}
