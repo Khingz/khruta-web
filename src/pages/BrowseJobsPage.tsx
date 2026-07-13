@@ -4,13 +4,14 @@ import { FilterSidebar } from "@/components/FilterSidebar";
 import { JobCard } from "@/components/JobCard";
 import { Pagination } from "@/components/Pagination";
 import { EmptyState } from "@/components/EmptyState";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
 import { useQuery } from "@tanstack/react-query";
-import { jobsApi, type JobFilters } from "@/api/jobsApi";
 import { useSearch, useNavigate } from "@tanstack/react-router";
 import { SlidersHorizontal, Search as SearchIcon } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
+import { jobsQueryOptions } from "@/queries/job.queries";
+import { JobFilters } from "@/server/jobs/jobs.functions";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
@@ -20,18 +21,16 @@ export function BrowseJobsPage() {
   const filters: JobFilters = {
     q: search.q,
     location: search.location,
-    category: search.category,
+    department: search.department,
     type: search.type,
-    remote: search.remote,
-    level: search.level,
-    page: Number(search.page) || 1,
+    page: search.page ?? 1,
     pageSize: 10,
+    minOffer: search.minOffer,
+    maxOffer: search.maxOffer,
   };
 
-  const { data, isLoading } = useQuery({
-    queryKey: ["jobs", filters],
-    queryFn: () => jobsApi.list(filters),
-  });
+  const { data: response, isLoading } = useQuery(jobsQueryOptions(filters));
+  const jobs = response?.data;
 
   const setParam = (patch: Partial<JobFilters>) => {
     const next = { ...search, ...patch, page: 1 };
@@ -62,50 +61,63 @@ export function BrowseJobsPage() {
           <FilterSidebar filters={filters} onChange={(f) => setParam(f)} />
         </div>
 
-        <div className="min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <p className="text-sm text-[#6B7280]">
-              {isLoading ? "Searching…" : `${data?.total ?? 0} jobs found`}
-            </p>
-            <Button
-              variant="outline"
-              size="sm"
-              leftIcon={<SlidersHorizontal className="h-4 w-4" />}
-              className="lg:hidden"
-              onClick={() => setMobileFilters(true)}
-            >
-              Filters
-            </Button>
-          </div>
-
-          {isLoading ? (
-            <div className="py-16">
-              <LoadingSpinner label="Loading jobs…" />
+        {isLoading ? (
+          <LoadingSpinner size={40} label="Loading Job Openings" />
+        ) : (
+          <div className="min-w-0">
+            <div className="flex items-center justify-between mb-4">
+              <p className="text-sm text-[#6B7280]">{`${jobs && jobs.totalRecords} jobs found`}</p>
+              <Button
+                variant="outline"
+                size="sm"
+                leftIcon={<SlidersHorizontal className="h-4 w-4" />}
+                className="lg:hidden"
+                onClick={() => setMobileFilters(true)}
+              >
+                Filters
+              </Button>
             </div>
-          ) : !data?.data.length ? (
-            <EmptyState
-              icon={<SearchIcon className="h-5 w-5" />}
-              title="No jobs match your search"
-              description="Try removing a filter or searching for a broader term."
-            />
-          ) : (
-            <>
-              <div className="flex flex-col gap-3">
-                {data.data.map((j) => (
-                  <JobCard key={j.id} job={j} />
-                ))}
-              </div>
-              <div className="mt-8">
-                <Pagination
-                  page={filters.page!}
-                  pageSize={filters.pageSize!}
-                  total={data.total}
-                  onChange={(p) => navigate({ to: "/jobs", search: { ...search, page: p } as any })}
-                />
-              </div>
-            </>
-          )}
-        </div>
+
+            {!jobs.items.length ? (
+              <EmptyState
+                icon={<SearchIcon className="h-5 w-5" />}
+                title="No jobs match your search"
+                description="Try removing a filter or searching for a broader term."
+              />
+            ) : (
+              <>
+                <div className="flex flex-col gap-3">
+                  {jobs.items.map((j: any) => (
+                    <JobCard
+                      key={j.Id}
+                      job={{
+                        id: j.Id,
+                        title: j.Title,
+                        company: j.CompanyName,
+                        location: j.Location,
+                        type: j.Type,
+                        postedAt: j.OpenDate,
+                        salaryMin: j.MinOffer,
+                        salaryMax: j.MaxOffer,
+                        currency: "USD",
+                      }}
+                    />
+                  ))}
+                </div>
+                <div className="mt-8">
+                  <Pagination
+                    page={jobs.pageNumber}
+                    pageSize={jobs.pageSize}
+                    total={jobs.totalRecords}
+                    onChange={(p) =>
+                      navigate({ to: "/jobs", search: { ...search, page: p } as any })
+                    }
+                  />
+                </div>
+              </>
+            )}
+          </div>
+        )}
       </div>
 
       {mobileFilters && (

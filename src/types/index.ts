@@ -4,9 +4,7 @@ export type Job = {
   company: string;
   companyLogo?: string;
   location: string;
-  remote: "Remote" | "Hybrid" | "On-site";
-  type: "Full-time" | "Part-time" | "Contract" | "Internship";
-  category: string;
+  type: string;
   salaryMin: number;
   salaryMax: number;
   currency: string;
@@ -16,7 +14,19 @@ export type Job = {
   requirements: string[];
   benefits: string[];
   skills: string[];
-  experienceLevel: "Entry" | "Mid" | "Senior" | "Lead";
+};
+
+export type JobCompact = {
+  id: string;
+  title: string;
+  company: string;
+  companyLogo?: string;
+  location: string;
+  type: string;
+  salaryMin: number;
+  salaryMax: number;
+  currency: string;
+  postedAt: string;
 };
 
 export type Application = {

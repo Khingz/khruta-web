@@ -13,13 +13,11 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SavedRouteImport } from './routes/saved'
 import { Route as ResumeRouteImport } from './routes/resume'
-import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OffersRouteImport } from './routes/offers'
 import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as LoginRouteImport } from './routes/login'
-import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as ApplicationsRouteImport } from './routes/applications'
@@ -50,11 +48,6 @@ const ResumeRoute = ResumeRouteImport.update({
   path: '/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ResetPasswordRoute = ResetPasswordRouteImport.update({
-  id: '/reset-password',
-  path: '/reset-password',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
@@ -78,11 +71,6 @@ const NotificationsRoute = NotificationsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
-  id: '/forgot-password',
-  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardRoute = DashboardRouteImport.update({
@@ -137,13 +125,11 @@ export interface FileRoutesByFullPath {
   '/applications': typeof ApplicationsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
@@ -159,13 +145,11 @@ export interface FileRoutesByTo {
   '/applications': typeof ApplicationsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
@@ -182,13 +166,11 @@ export interface FileRoutesById {
   '/applications': typeof ApplicationsRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
-  '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/reset-password': typeof ResetPasswordRoute
   '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
@@ -206,13 +188,11 @@ export interface FileRouteTypes {
     | '/applications'
     | '/contact'
     | '/dashboard'
-    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/reset-password'
     | '/resume'
     | '/saved'
     | '/settings'
@@ -228,13 +208,11 @@ export interface FileRouteTypes {
     | '/applications'
     | '/contact'
     | '/dashboard'
-    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/reset-password'
     | '/resume'
     | '/saved'
     | '/settings'
@@ -250,13 +228,11 @@ export interface FileRouteTypes {
     | '/applications'
     | '/contact'
     | '/dashboard'
-    | '/forgot-password'
     | '/login'
     | '/notifications'
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/reset-password'
     | '/resume'
     | '/saved'
     | '/settings'
@@ -273,13 +249,11 @@ export interface RootRouteChildren {
   ApplicationsRoute: typeof ApplicationsRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
-  ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
   OffersRoute: typeof OffersRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
-  ResetPasswordRoute: typeof ResetPasswordRoute
   ResumeRoute: typeof ResumeRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
@@ -320,13 +294,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/reset-password': {
-      id: '/reset-password'
-      path: '/reset-password'
-      fullPath: '/reset-password'
-      preLoaderRoute: typeof ResetPasswordRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/register': {
       id: '/register'
       path: '/register'
@@ -360,13 +327,6 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/forgot-password': {
-      id: '/forgot-password'
-      path: '/forgot-password'
-      fullPath: '/forgot-password'
-      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard': {
@@ -441,13 +401,11 @@ const rootRouteChildren: RootRouteChildren = {
   ApplicationsRoute: ApplicationsRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
-  ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
   OffersRoute: OffersRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
-  ResetPasswordRoute: ResetPasswordRoute,
   ResumeRoute: ResumeRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,

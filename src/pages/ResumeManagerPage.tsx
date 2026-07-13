@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ResumeUploader } from "@/components/ResumeUploader";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { profileApi } from "@/api/profileApi";
 import { useToast } from "@/components/Toast";

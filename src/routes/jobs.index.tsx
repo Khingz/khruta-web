@@ -1,25 +1,13 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { BrowseJobsPage } from "@/pages/BrowseJobsPage";
+import { jobsQueryOptions } from "@/queries/job.queries";
+import { JobFiltersSchema } from "@/server/jobs/jobs.functions";
 
 export const Route = createFileRoute("/jobs/")({
+  validateSearch: JobFiltersSchema,
+  loaderDeps: ({ search }) => ({ filters: search }),
+  loader: ({ context, deps }) => {
+    context.queryClient.prefetchQuery(jobsQueryOptions(deps.filters));
+  },
   component: BrowseJobsPage,
-  validateSearch: (
-    s: Record<string, unknown>,
-  ): {
-    q?: string;
-    location?: string;
-    category?: string;
-    type?: string;
-    remote?: string;
-    level?: string;
-    page?: number;
-  } => ({
-    q: (s.q as string) || undefined,
-    location: (s.location as string) || undefined,
-    category: (s.category as string) || undefined,
-    type: (s.type as string) || undefined,
-    remote: (s.remote as string) || undefined,
-    level: (s.level as string) || undefined,
-    page: s.page ? Number(s.page) : undefined,
-  }),
 });

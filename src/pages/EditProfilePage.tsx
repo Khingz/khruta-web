@@ -4,7 +4,7 @@ import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { profileApi } from "@/api/profileApi";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useForm } from "react-hook-form";
 import { useEffect, useState } from "react";
 import { useToast } from "@/components/Toast";

@@ -1,6 +1,6 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProfileCard } from "@/components/ProfileCard";
-import { LoadingSpinner } from "@/components/LoadingSpinner";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
 import { useQuery } from "@tanstack/react-query";
 import { profileApi } from "@/api/profileApi";

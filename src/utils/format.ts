@@ -7,20 +7,30 @@ export function formatSalary(min: number, max: number, currency = "USD") {
   return `${f.format(min)} – ${f.format(max)}`;
 }
 
-export function timeAgo(iso: string) {
-  const d = new Date(iso).getTime();
-  const diff = Date.now() - d;
-  const s = Math.floor(diff / 1000);
-  if (s < 60) return "just now";
-  const m = Math.floor(s / 60);
-  if (m < 60) return `${m}m ago`;
-  const h = Math.floor(m / 60);
-  if (h < 24) return `${h}h ago`;
-  const day = Math.floor(h / 24);
-  if (day < 30) return `${day}d ago`;
-  const mo = Math.floor(day / 30);
-  if (mo < 12) return `${mo}mo ago`;
-  return `${Math.floor(mo / 12)}y ago`;
+export function timeAgo(date: Date | string): string {
+  const inputDate = new Date(date);
+  const now = new Date();
+
+  const diffMs = now.getTime() - inputDate.getTime();
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+
+  if (days === 0) {
+    return "Today";
+  }
+  if (days < 7) {
+    return `${days}d ago`;
+  }
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) {
+    return `${weeks}w ago`;
+  }
+  const months = Math.floor(days / 30);
+  if (months < 12) {
+    return `${months}mo ago`;
+  }
+
+  const years = Math.floor(months / 12);
+  return `${years}y ago`;
 }
 
 export function formatDate(iso: string) {

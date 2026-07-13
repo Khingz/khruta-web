@@ -33,7 +33,7 @@ export const listJobs = createServerFn({ method: "GET" })
         return { data: res.slice(start, start + pageSize), total: res.length, page, pageSize };
       }
 
-      const { sfApex } = await import("@/lib/salesforce.server");
+      const { sfApex } = await import("@/server/salesforce.server");
       return sfApex.get<{ data: Job[]; total: number; page: number; pageSize: number }>(
         "/khruta/jobs",
         { q: data.q, location: data.location, page, pageSize },
