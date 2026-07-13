@@ -6,8 +6,8 @@ import { JobFiltersSchema } from "@/server/jobs/jobs.functions";
 export const Route = createFileRoute("/jobs/")({
   validateSearch: JobFiltersSchema,
   loaderDeps: ({ search }) => ({ filters: search }),
-  loader: ({ context, deps }) => {
-    context.queryClient.prefetchQuery(jobsQueryOptions(deps.filters));
+  loader: async ({ context, deps }) => {
+    await context.queryClient.prefetchQuery(jobsQueryOptions(deps.filters));
   },
   component: BrowseJobsPage,
 });

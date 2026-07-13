@@ -11,11 +11,6 @@ import { CTASection } from "@/components/landingScreen/CTASection";
 import { jobsQueryOptions } from "@/queries/job.queries";
 
 export function LandingPage() {
-  const { data: featured = [] } = useQuery({
-    queryKey: ["featured"],
-    queryFn: () => jobsApi.featured(),
-  });
-
   const { data: response, isLoading } = useQuery(jobsQueryOptions());
   const recentJobs = response?.data?.items;
 

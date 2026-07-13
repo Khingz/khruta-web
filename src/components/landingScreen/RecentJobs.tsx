@@ -18,7 +18,7 @@ export const RecentJobs = ({ recentJobs, isLoading }: any) => {
           View all <ArrowRight className="h-4 w-4" />
         </Link>
       </div>
-      {isLoading ? (
+      {isLoading && !recentJobs ? (
         <RecentJobsSkeleton />
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
