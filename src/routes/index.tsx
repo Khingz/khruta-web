@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { LandingPage } from "@/pages/LandingPage";
-import { JobFiltersSchema } from "@/server/jobs/jobs.functions";
 import { jobsQueryOptions } from "@/queries/job.queries";
+import { JobFiltersSchema } from "@/schemas/job.schemas";
 
 export const Route = createFileRoute("/")({
   validateSearch: JobFiltersSchema,

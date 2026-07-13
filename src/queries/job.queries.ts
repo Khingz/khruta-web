@@ -1,4 +1,5 @@
-import { getJobById, getJobs, JobFilters, JobId } from "@/server/jobs/jobs.functions";
+import { JobFilters, JobId } from "@/schemas/job.schemas";
+import { getJobById, getJobs } from "@/server/jobs/jobs.functions";
 import { queryOptions } from "@tanstack/react-query";
 
 export const jobQueryOptions = (id: JobId) =>
