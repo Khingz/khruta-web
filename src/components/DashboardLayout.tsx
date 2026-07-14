@@ -3,7 +3,7 @@ import { useEffect, type ReactNode } from "react";
 import { Navbar } from "./Navbar";
 import { useAuth } from "@clerk/tanstack-react-start";
 import { cn } from "@/utils/format";
-import { items } from "@/utils/dashboardUtils";
+import { menuItems } from "@/utils/navUtils";
 
 export function DashboardLayout({
   children,
@@ -39,7 +39,7 @@ export function DashboardLayout({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-[240px_1fr] gap-8">
         <aside className="hidden lg:block">
           <nav className="surface-card p-2 sticky top-24">
-            {items.map(({ to, label, icon: Icon }) => {
+            {menuItems.map(({ to, label, icon: Icon }) => {
               const active = pathname === to || (to !== "/dashboard" && pathname.startsWith(to));
               return (
                 <Link

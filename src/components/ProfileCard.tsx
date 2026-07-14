@@ -4,7 +4,6 @@ import { Badge } from "./primitives/Badge";
 import { MapPin, Mail, Phone, Link2 } from "lucide-react";
 
 export function ProfileCard({ profile }: any) {
-  console.log(profile);
   return (
     <div className="surface-card p-6">
       <div className="flex items-start gap-4">
@@ -13,12 +12,12 @@ export function ProfileCard({ profile }: any) {
           <h2 className="font-display text-xl font-semibold">{profile.fullname}</h2>
           <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 text-sm text-[#6B7280]">
             <span className="inline-flex items-center gap-1.5">
-              <MapPin className="h-4 w-4" />
-              {profile.location || "Not Set"}
-            </span>
-            <span className="inline-flex items-center gap-1.5">
               <Mail className="h-4 w-4" />
               {profile.email}
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-4 w-4" />
+              {profile.location || "Not Set"}
             </span>
             <span className="inline-flex items-center gap-1.5">
               <Phone className="h-4 w-4" />

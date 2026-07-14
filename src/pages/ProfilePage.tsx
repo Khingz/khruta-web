@@ -2,13 +2,13 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProfileCard } from "@/components/ProfileCard";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 
 export function ProfilePage() {
-  const { data: response, isLoading } = useQuery(candidateProfileQuery);
+  const { data: response, isLoading } = useSuspenseQuery(candidateProfileQuery);
   const user = response?.data ?? null;
   return (
     <DashboardLayout

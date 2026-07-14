@@ -11,6 +11,7 @@ import { Briefcase, Bookmark, Activity, CalendarCheck, Gift, ArrowRight } from "
 import { Badge } from "@/components/primitives/Badge";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatDateTime, timeAgo } from "@/utils/format";
+import { menuItems } from "@/utils/navUtils";
 
 const STATUS_TONE: Record<string, any> = {
   Submitted: "info",
@@ -45,31 +46,13 @@ export function DashboardPage() {
   const active = apps.filter((a) => !["Rejected", "Withdrawn"].includes(a.status));
   const interviews = apps.filter((a) => a.status === "Interview" && a.interviewAt);
 
-  const stats = [
-    { label: "Applications submitted", value: apps.length, icon: Briefcase, to: "/applications" },
-    { label: "Saved jobs", value: savedIds.length, icon: Bookmark, to: "/saved" },
-    { label: "Active applications", value: active.length, icon: Activity, to: "/applications" },
-    {
-      label: "Interviews scheduled",
-      value: interviews.length,
-      icon: CalendarCheck,
-      to: "/applications",
-    },
-    {
-      label: "Job offers",
-      value: offers.filter((o) => o.status === "Pending").length,
-      icon: Gift,
-      to: "/offers",
-    },
-  ];
-
   return (
     <DashboardLayout
       title={`Welcome back, ${user?.firstName ?? ""}`}
       subtitle="Here's the state of your search today."
     >
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-        {stats.map((s) => (
+        {menuItems.map((s, i) => (
           <Link
             key={s.label}
             to={s.to as any}
@@ -78,7 +61,7 @@ export function DashboardPage() {
             <span className="h-9 w-9 grid place-items-center rounded-lg bg-[#EEF0FB] text-[#5B3FD6]">
               <s.icon className="h-4 w-4" />
             </span>
-            <p className="mt-3 font-display text-2xl font-bold">{s.value}</p>
+            <p className="mt-3 font-display text-2xl font-bold">{2 + i}</p>
             <p className="text-xs text-[#6B7280] mt-0.5">{s.label}</p>
           </Link>
         ))}

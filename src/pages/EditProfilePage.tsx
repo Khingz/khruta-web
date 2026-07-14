@@ -12,14 +12,7 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Profile } from "@/types";
 import { X } from "lucide-react";
 
-type Form = Pick<
-  Profile,
-  "firstName" | "lastName" | "email" | "phone" | "location" | "headline" | "bio" | "experienceYears"
-> & {
-  linkedin?: string;
-  portfolio?: string;
-  github?: string;
-};
+type Form = Profile;
 
 export function EditProfilePage() {
   const qc = useQueryClient();
@@ -27,12 +20,14 @@ export function EditProfilePage() {
     queryKey: ["profile"],
     queryFn: () => profileApi.get(),
   });
+
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors, isDirty },
   } = useForm<Form>();
+
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const { push } = useToast();
@@ -41,42 +36,18 @@ export function EditProfilePage() {
   useEffect(() => {
     if (profile) {
       reset({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
+        fullname: profile.fullname,
         email: profile.email,
         phone: profile.phone,
         location: profile.location,
-        headline: profile.headline,
         bio: profile.bio,
-        experienceYears: profile.experienceYears,
-        linkedin: profile.links?.linkedin,
-        portfolio: profile.links?.portfolio,
-        github: profile.links?.github,
+        linkedinURL: profile.linkedinURL,
+        portfolioLink: profile.portfolioLink,
+        resumeLink: profile.resumeLink,
       });
-      setSkills(profile.skills);
+      setSkills(profile.skills || []);
     }
   }, [profile, reset]);
-
-  const save = useMutation({
-    mutationFn: (d: Form) =>
-      profileApi.update({
-        firstName: d.firstName,
-        lastName: d.lastName,
-        email: d.email,
-        phone: d.phone,
-        location: d.location,
-        headline: d.headline,
-        bio: d.bio,
-        experienceYears: Number(d.experienceYears),
-        skills,
-        links: { linkedin: d.linkedin, portfolio: d.portfolio, github: d.github },
-      }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["profile"] });
-      push({ tone: "success", title: "Profile updated" });
-      navigate({ to: "/profile" });
-    },
-  });
 
   const addSkill = () => {
     const s = skillInput.trim();
@@ -97,44 +68,20 @@ export function EditProfilePage() {
       subtitle="Keep your information current to get better matches."
     >
       <form
-        onSubmit={handleSubmit((d) => save.mutate(d))}
+        onSubmit={() => console.log("submitted")}
         className="surface-card p-6 sm:p-8 space-y-6 max-w-3xl"
       >
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-1 gap-4">
           <Input
-            label="First name"
-            {...register("firstName", { required: "Required" })}
-            error={errors.firstName?.message}
+            label="Full name"
+            {...register("fullname", { required: "Required" })}
+            error={errors.fullname?.message}
           />
-          <Input
-            label="Last name"
-            {...register("lastName", { required: "Required" })}
-            error={errors.lastName?.message}
-          />
-        </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Input
-            label="Email"
-            type="email"
-            {...register("email", { required: "Required" })}
-            error={errors.email?.message}
-          />
-          <Input label="Phone" {...register("phone")} />
         </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <Input label="Location" {...register("location")} placeholder="City, Country" />
-          <Input
-            label="Years of experience"
-            type="number"
-            min={0}
-            {...register("experienceYears", { valueAsNumber: true })}
-          />
+          <Input label="Phone" {...register("phone")} />
         </div>
-        <Input
-          label="Headline"
-          {...register("headline")}
-          placeholder="e.g. Senior Engineer · 7 yrs"
-        />
         <Textarea
           label="Bio"
           {...register("bio")}
@@ -179,22 +126,22 @@ export function EditProfilePage() {
         <div className="grid sm:grid-cols-3 gap-4">
           <Input
             label="LinkedIn"
-            {...register("linkedin")}
+            {...register("linkedinURL")}
             placeholder="https://linkedin.com/in/…"
           />
-          <Input label="Portfolio" {...register("portfolio")} placeholder="https://…" />
-          <Input label="GitHub" {...register("github")} placeholder="https://github.com/…" />
+          <Input label="Portfolio" {...register("portfolioLink")} placeholder="https://…" />
+          <Input
+            label="Resume"
+            {...register("resumeLink")}
+            placeholder="https://drive.google.com/…"
+          />
         </div>
 
         <div className="flex justify-end gap-2 border-t border-[#F1F5F9] pt-5">
           <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile" })}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            loading={save.isPending}
-            disabled={!isDirty && skills === profile?.skills}
-          >
+          <Button type="submit" loading={false} disabled={!isDirty && skills === profile?.skills}>
             Save changes
           </Button>
         </div>
