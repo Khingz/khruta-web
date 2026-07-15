@@ -20,11 +20,11 @@ export const profileApi = {
     }
     return (await api.patch("/profile", patch)).data;
   },
-  async uploadResume(file: File): Promise<Profile["resume"]> {
+  async uploadResume(file: File): Promise<Profile["resumeLink"]> {
     if (MOCK_MODE) {
       await wait(700);
-      cached.resume = { name: file.name, size: file.size, uploadedAt: new Date().toISOString() };
-      return cached.resume;
+      cached.resumeLink = file.name;
+      return cached.resumeLink;
     }
     const fd = new FormData();
     fd.append("file", file);
@@ -35,7 +35,7 @@ export const profileApi = {
   async deleteResume(): Promise<void> {
     if (MOCK_MODE) {
       await wait(200);
-      cached.resume = null;
+      cached.resumeLink = "";
       return;
     }
     await api.delete("/profile/resume");

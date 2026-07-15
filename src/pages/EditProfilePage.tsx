@@ -12,10 +12,11 @@ import { useNavigate } from "@tanstack/react-router";
 import type { Profile } from "@/types";
 import { X } from "lucide-react";
 
-type Form = Profile;
+type FormValues = Omit<Profile, "id" | "email">;
 
 export function EditProfilePage() {
   const qc = useQueryClient();
+
   const { data: profile, isLoading } = useQuery({
     queryKey: ["profile"],
     queryFn: () => profileApi.get(),
@@ -26,7 +27,12 @@ export function EditProfilePage() {
     handleSubmit,
     reset,
     formState: { errors, isDirty },
-  } = useForm<Form>();
+  } = useForm<FormValues>();
+
+  const onSubmit = (data: FormValues) => {
+    console.log(data);
+    console.log("Submitted");
+  };
 
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
@@ -37,13 +43,13 @@ export function EditProfilePage() {
     if (profile) {
       reset({
         fullname: profile.fullname,
-        email: profile.email,
         phone: profile.phone,
         location: profile.location,
         bio: profile.bio,
         linkedinURL: profile.linkedinURL,
         portfolioLink: profile.portfolioLink,
         resumeLink: profile.resumeLink,
+        skills: profile.skills ?? [],
       });
       setSkills(profile.skills || []);
     }
@@ -68,13 +74,13 @@ export function EditProfilePage() {
       subtitle="Keep your information current to get better matches."
     >
       <form
-        onSubmit={() => console.log("submitted")}
+        onSubmit={handleSubmit(onSubmit)}
         className="surface-card p-6 sm:p-8 space-y-6 max-w-3xl"
       >
         <div className="grid sm:grid-cols-1 gap-4">
           <Input
             label="Full name"
-            {...register("fullname", { required: "Required" })}
+            {...register("fullname", { required: "Fullname is Required" })}
             error={errors.fullname?.message}
           />
         </div>
