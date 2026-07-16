@@ -10,7 +10,7 @@ export function ProfileCard({ profile }: any) {
         <Avatar name={`${profile.fullname}`} src={profile.avatarUrl} size={64} />
         <div className="flex-1 min-w-0">
           <h2 className="font-display text-xl font-semibold">{profile.fullname}</h2>
-          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-1.5 text-sm text-[#6B7280]">
+          <div className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-y-3 text-sm text-[#6B7280]">
             <span className="inline-flex items-center gap-1.5">
               <Mail className="h-4 w-4" />
               {profile.email}

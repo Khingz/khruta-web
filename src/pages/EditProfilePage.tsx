@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Input, Textarea } from "@/components/primitives/Input";
 import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { profileApi } from "@/api/profileApi";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useForm } from "react-hook-form";
@@ -11,16 +11,21 @@ import { useToast } from "@/components/Toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { Profile } from "@/types";
 import { X } from "lucide-react";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { updateCandidateProfile } from "@/server/candidates/candidates.function";
 
-type FormValues = Omit<Profile, "id" | "email">;
+export type FormValues = Omit<Profile, "id" | "email">;
 
 export function EditProfilePage() {
   const qc = useQueryClient();
+  const [skills, setSkills] = useState<string[]>([]);
+  const [skillInput, setSkillInput] = useState("");
+  const { push } = useToast();
+  const navigate = useNavigate();
 
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => profileApi.get(),
-  });
+  const { data: response } = useSuspenseQuery(candidateProfileQuery);
+  const profile = response?.data;
+  const isLoading = false;
 
   const {
     register,
@@ -29,15 +34,29 @@ export function EditProfilePage() {
     formState: { errors, isDirty },
   } = useForm<FormValues>();
 
-  const onSubmit = (data: FormValues) => {
-    console.log(data);
-    console.log("Submitted");
-  };
+  const skillsDirty = JSON.stringify(skills) !== JSON.stringify(profile?.skills ?? []);
 
-  const [skills, setSkills] = useState<string[]>([]);
-  const [skillInput, setSkillInput] = useState("");
-  const { push } = useToast();
-  const navigate = useNavigate();
+  const mutation = useMutation({
+    mutationFn: (formData: FormValues) =>
+      updateCandidateProfile({
+        data: { recordId: profile!.id, data: formData },
+      }),
+    onSuccess: (updated) => {
+      qc.setQueryData(candidateProfileQuery.queryKey, (old: any) => ({
+        ...old,
+        data: { ...old.data, ...updated?.data },
+      }));
+      push({ tone: "success", title: "Profile updated" });
+      navigate({ to: "/profile" });
+    },
+    onError: (err: Error) => {
+      push({ tone: "error", title: err.message });
+    },
+  });
+
+  const onSubmit = (data: FormValues) => {
+    mutation.mutate({ ...data, skills });
+  };
 
   useEffect(() => {
     if (profile) {
@@ -80,14 +99,17 @@ export function EditProfilePage() {
         <div className="grid sm:grid-cols-1 gap-4">
           <Input
             label="Full name"
+            placeholder="John Doe"
             {...register("fullname", { required: "Fullname is Required" })}
             error={errors.fullname?.message}
           />
         </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           <Input label="Location" {...register("location")} placeholder="City, Country" />
           <Input label="Phone" {...register("phone")} />
         </div>
+
         <Textarea
           label="Bio"
           {...register("bio")}
@@ -111,6 +133,7 @@ export function EditProfilePage() {
             ))}
             {skills.length === 0 && <Badge>No skills yet</Badge>}
           </div>
+
           <div className="flex gap-2">
             <Input
               value={skillInput}
@@ -143,11 +166,11 @@ export function EditProfilePage() {
           />
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-[#F1F5F9] pt-5">
+        <div className="flex justify-end gap-2 border-t border-[#F1F5F9] pt-5 cursor-pointer">
           <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile" })}>
             Cancel
           </Button>
-          <Button type="submit" loading={false} disabled={!isDirty && skills === profile?.skills}>
+          <Button type="submit" loading={false} disabled={!isDirty && !skillsDirty}>
             Save changes
           </Button>
         </div>

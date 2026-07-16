@@ -28,9 +28,7 @@ export function ProfilePage() {
           <div className="grid sm:grid-cols-2 gap-4">
             <div className="surface-card p-6">
               <p className="text-sm text-[#6B7280]">Bio</p>
-              <p className="text-sm text-[#1F2937] leading-relaxed mt-1">
-                {user.aboutYourself || "Not Set"}
-              </p>
+              <p className="text-sm text-[#1F2937] leading-relaxed mt-1">{user.bio || "Not Set"}</p>
             </div>
 
             <div className="surface-card p-6">
