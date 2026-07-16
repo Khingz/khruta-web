@@ -76,8 +76,6 @@ function pick<T>(arr: T[], n: number): T[] {
 }
 
 const types: Job["type"][] = ["Full-time", "Part-time", "Contract", "Internship"];
-const remotes: Job["remote"][] = ["Remote", "Hybrid", "On-site"];
-const levels: Job["experienceLevel"][] = ["Entry", "Mid", "Senior", "Lead"];
 
 export const MOCK_JOBS: Job[] = Array.from({ length: 28 }).map((_, i) => {
   const cat = CATEGORIES[i % CATEGORIES.length];
@@ -87,14 +85,12 @@ export const MOCK_JOBS: Job[] = Array.from({ length: 28 }).map((_, i) => {
     title: titles[i % titles.length],
     company: companies[i % companies.length],
     location: locations[i % locations.length],
-    remote: remotes[i % remotes.length],
     type: types[i % types.length],
     category: cat.name,
     salaryMin: base * 1000,
     salaryMax: (base + 40) * 1000,
     currency: "USD",
     postedAt: new Date(Date.now() - i * 86400000 * 1.3).toISOString(),
-    experienceLevel: levels[i % levels.length],
     skills: pick(skillsPool, 4 + (i % 3)),
     description:
       "Join a high-leverage team building tools used by millions. You'll own end-to-end product surface area, partner with design and product, and ship continuously to a global audience.",
@@ -121,18 +117,16 @@ export const MOCK_JOBS: Job[] = Array.from({ length: 28 }).map((_, i) => {
 
 export const MOCK_PROFILE: Profile = {
   id: "u_1",
-  firstName: "Alex",
-  lastName: "Morgan",
+  fullname: "Morgan Tailor",
   email: "alex@example.com",
   phone: "+1 (555) 010-1234",
   location: "San Francisco, CA",
   headline: "Senior Software Engineer · 7 yrs",
   bio: "Product-minded engineer who enjoys building polished, reliable interfaces and scaling teams.",
   skills: ["React", "TypeScript", "Node.js", "GraphQL", "AWS"],
-  experienceYears: 7,
-  avatarUrl: "",
-  resume: { name: "Alex_Morgan_Resume.pdf", size: 248_320, uploadedAt: new Date().toISOString() },
-  links: { linkedin: "https://linkedin.com/in/alex", portfolio: "https://alex.dev" },
+  resumeLink: "https://linkedin.com/in/alex",
+  linkedinURL: "https://linkedin.com/in/alex",
+  portfolioLink: "https://alex.dev",
 };
 
 export const MOCK_APPLICATIONS: Application[] = MOCK_JOBS.slice(0, 6).map((job, i) => ({

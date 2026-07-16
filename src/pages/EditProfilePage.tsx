@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Input, Textarea } from "@/components/primitives/Input";
 import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { profileApi } from "@/api/profileApi";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useForm } from "react-hook-form";
@@ -11,72 +11,68 @@ import { useToast } from "@/components/Toast";
 import { useNavigate } from "@tanstack/react-router";
 import type { Profile } from "@/types";
 import { X } from "lucide-react";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { updateCandidateProfile } from "@/server/candidates/candidates.function";
 
-type Form = Pick<
-  Profile,
-  "firstName" | "lastName" | "email" | "phone" | "location" | "headline" | "bio" | "experienceYears"
-> & {
-  linkedin?: string;
-  portfolio?: string;
-  github?: string;
-};
+export type FormValues = Omit<Profile, "id" | "email">;
 
 export function EditProfilePage() {
   const qc = useQueryClient();
-  const { data: profile, isLoading } = useQuery({
-    queryKey: ["profile"],
-    queryFn: () => profileApi.get(),
-  });
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors, isDirty },
-  } = useForm<Form>();
   const [skills, setSkills] = useState<string[]>([]);
   const [skillInput, setSkillInput] = useState("");
   const { push } = useToast();
   const navigate = useNavigate();
 
-  useEffect(() => {
-    if (profile) {
-      reset({
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        email: profile.email,
-        phone: profile.phone,
-        location: profile.location,
-        headline: profile.headline,
-        bio: profile.bio,
-        experienceYears: profile.experienceYears,
-        linkedin: profile.links?.linkedin,
-        portfolio: profile.links?.portfolio,
-        github: profile.links?.github,
-      });
-      setSkills(profile.skills);
-    }
-  }, [profile, reset]);
+  const { data: response } = useSuspenseQuery(candidateProfileQuery);
+  const profile = response?.data;
+  const isLoading = false;
 
-  const save = useMutation({
-    mutationFn: (d: Form) =>
-      profileApi.update({
-        firstName: d.firstName,
-        lastName: d.lastName,
-        email: d.email,
-        phone: d.phone,
-        location: d.location,
-        headline: d.headline,
-        bio: d.bio,
-        experienceYears: Number(d.experienceYears),
-        skills,
-        links: { linkedin: d.linkedin, portfolio: d.portfolio, github: d.github },
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm<FormValues>();
+
+  const skillsDirty = JSON.stringify(skills) !== JSON.stringify(profile?.skills ?? []);
+
+  const mutation = useMutation({
+    mutationFn: (formData: FormValues) =>
+      updateCandidateProfile({
+        data: { recordId: profile!.id, data: formData },
       }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["profile"] });
+    onSuccess: (updated) => {
+      qc.setQueryData(candidateProfileQuery.queryKey, (old: any) => ({
+        ...old,
+        data: { ...old.data, ...updated?.data },
+      }));
       push({ tone: "success", title: "Profile updated" });
       navigate({ to: "/profile" });
     },
+    onError: (err: Error) => {
+      push({ tone: "error", title: err.message });
+    },
   });
+
+  const onSubmit = (data: FormValues) => {
+    mutation.mutate({ ...data, skills });
+  };
+
+  useEffect(() => {
+    if (profile) {
+      reset({
+        fullname: profile.fullname,
+        phone: profile.phone,
+        location: profile.location,
+        bio: profile.bio,
+        linkedinURL: profile.linkedinURL,
+        portfolioLink: profile.portfolioLink,
+        resumeLink: profile.resumeLink,
+        skills: profile.skills ?? [],
+      });
+      setSkills(profile.skills || []);
+    }
+  }, [profile, reset]);
 
   const addSkill = () => {
     const s = skillInput.trim();
@@ -97,44 +93,23 @@ export function EditProfilePage() {
       subtitle="Keep your information current to get better matches."
     >
       <form
-        onSubmit={handleSubmit((d) => save.mutate(d))}
+        onSubmit={handleSubmit(onSubmit)}
         className="surface-card p-6 sm:p-8 space-y-6 max-w-3xl"
       >
-        <div className="grid sm:grid-cols-2 gap-4">
+        <div className="grid sm:grid-cols-1 gap-4">
           <Input
-            label="First name"
-            {...register("firstName", { required: "Required" })}
-            error={errors.firstName?.message}
-          />
-          <Input
-            label="Last name"
-            {...register("lastName", { required: "Required" })}
-            error={errors.lastName?.message}
+            label="Full name"
+            placeholder="John Doe"
+            {...register("fullname", { required: "Fullname is Required" })}
+            error={errors.fullname?.message}
           />
         </div>
-        <div className="grid sm:grid-cols-2 gap-4">
-          <Input
-            label="Email"
-            type="email"
-            {...register("email", { required: "Required" })}
-            error={errors.email?.message}
-          />
-          <Input label="Phone" {...register("phone")} />
-        </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           <Input label="Location" {...register("location")} placeholder="City, Country" />
-          <Input
-            label="Years of experience"
-            type="number"
-            min={0}
-            {...register("experienceYears", { valueAsNumber: true })}
-          />
+          <Input label="Phone" {...register("phone")} />
         </div>
-        <Input
-          label="Headline"
-          {...register("headline")}
-          placeholder="e.g. Senior Engineer · 7 yrs"
-        />
+
         <Textarea
           label="Bio"
           {...register("bio")}
@@ -158,6 +133,7 @@ export function EditProfilePage() {
             ))}
             {skills.length === 0 && <Badge>No skills yet</Badge>}
           </div>
+
           <div className="flex gap-2">
             <Input
               value={skillInput}
@@ -179,22 +155,22 @@ export function EditProfilePage() {
         <div className="grid sm:grid-cols-3 gap-4">
           <Input
             label="LinkedIn"
-            {...register("linkedin")}
+            {...register("linkedinURL")}
             placeholder="https://linkedin.com/in/…"
           />
-          <Input label="Portfolio" {...register("portfolio")} placeholder="https://…" />
-          <Input label="GitHub" {...register("github")} placeholder="https://github.com/…" />
+          <Input label="Portfolio" {...register("portfolioLink")} placeholder="https://…" />
+          <Input
+            label="Resume"
+            {...register("resumeLink")}
+            placeholder="https://drive.google.com/…"
+          />
         </div>
 
-        <div className="flex justify-end gap-2 border-t border-[#F1F5F9] pt-5">
+        <div className="flex justify-end gap-2 border-t border-[#F1F5F9] pt-5 cursor-pointer">
           <Button type="button" variant="ghost" onClick={() => navigate({ to: "/profile" })}>
             Cancel
           </Button>
-          <Button
-            type="submit"
-            loading={save.isPending}
-            disabled={!isDirty && skills === profile?.skills}
-          >
+          <Button type="submit" loading={false} disabled={!isDirty && !skillsDirty}>
             Save changes
           </Button>
         </div>
