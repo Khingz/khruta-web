@@ -113,11 +113,18 @@ export function ApplicationsPage() {
                     <Badge tone={TONE[a.status]}>{a.status}</Badge>
                   </td>
                   <td className="px-5 py-4 text-right">
-                    {!["Withdrawn", "Rejected"].includes(a.status) && (
-                      <Button size="sm" variant="ghost" onClick={() => withdraw.mutate(a.id)}>
-                        Withdraw
-                      </Button>
-                    )}
+                    <div className="inline-flex gap-1">
+                      <Link to="/applications/$id" params={{ id: a.id }}>
+                        <Button size="sm" variant="outline">
+                          View
+                        </Button>
+                      </Link>
+                      {!["Withdrawn", "Rejected"].includes(a.status) && (
+                        <Button size="sm" variant="ghost" onClick={() => withdraw.mutate(a.id)}>
+                          Withdraw
+                        </Button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               ))}

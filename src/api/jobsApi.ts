@@ -30,10 +30,7 @@ export const jobsApi = {
         );
       if (filters.location)
         res = res.filter((j) => j.location.toLowerCase().includes(filters.location!.toLowerCase()));
-      if (filters.category) res = res.filter((j) => j.category === filters.category);
       if (filters.type) res = res.filter((j) => j.type === filters.type);
-      if (filters.remote) res = res.filter((j) => j.remote === filters.remote);
-      if (filters.level) res = res.filter((j) => j.experienceLevel === filters.level);
       const page = filters.page ?? 1;
       const pageSize = filters.pageSize ?? 10;
       const start = (page - 1) * pageSize;

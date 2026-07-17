@@ -2,22 +2,30 @@ import { PublicLayout } from "@/components/PublicLayout";
 import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
 import { useQuery } from "@tanstack/react-query";
-import { useParams, Link } from "@tanstack/react-router";
+import { useParams, Link, useNavigate, Outlet } from "@tanstack/react-router";
 import { formatSalary, timeAgo } from "@/utils/format";
 import { MapPin, Briefcase, Clock, Bookmark, Share2, Check, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { JobDetailSkeleton } from "@/components/loadingSpinners/JobDetailSkeleton";
 import { jobQueryOptions } from "@/queries/job.queries";
+import { useAuth } from "@clerk/tanstack-react-start";
 
 export function JobDetailsPage() {
   const { id } = useParams({ from: "/jobs/$id" });
   const { data: response, isLoading } = useQuery(jobQueryOptions(id));
   const job = response && response.data;
+  const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   const { push } = useToast();
 
   const saved = true;
   // const saved = savedIds.includes(job.id);
+
+  const onApply = () =>
+    isSignedIn
+      ? navigate({ to: "/jobs/$id/apply", params: { id } })
+      : navigate({ to: "/login", search: { redirect: `/jobs/${id}/apply` } as any });
 
   return (
     <PublicLayout>
@@ -66,7 +74,7 @@ export function JobDetailsPage() {
               <div className="mt-6 flex flex-wrap gap-2">
                 <Button
                   size="lg"
-                  onClick={() => console.log("applied")}
+                  onClick={onApply}
                   loading={false}
                   leftIcon={<Check className="h-4 w-4" />}
                 >

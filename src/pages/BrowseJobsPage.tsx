@@ -11,7 +11,7 @@ import { useState } from "react";
 import { Button } from "@/components/primitives/Button";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { jobsQueryOptions } from "@/queries/job.queries";
-import { JobFilters } from "@/server/jobs/jobs.functions";
+import { JobFilters } from "@/schemas/job.schemas";
 
 export function BrowseJobsPage() {
   const search = useSearch({ strict: false }) as JobFilters;
