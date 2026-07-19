@@ -19,3 +19,19 @@ export const items = [
   { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/settings", label: "Settings", icon: Settings },
 ] as const;
+
+export const STATUS_TONE: Record<string, any> = {
+  Submitted: "info",
+  "Under Review": "warning",
+  Interview: "brand",
+  Offer: "success",
+  Rejected: "error",
+  Withdrawn: "default",
+};
+
+export const dashboardItems = [
+  { to: "/applications", label: "Applications", icon: Briefcase },
+  { to: "/saved", label: "Saved jobs", icon: Bookmark },
+  { to: "/offers", label: "Offers", icon: Gift },
+  { to: "/settings", label: "Settings", icon: Settings },
+];

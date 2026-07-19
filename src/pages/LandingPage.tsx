@@ -12,7 +12,7 @@ import { jobsQueryOptions } from "@/queries/job.queries";
 
 export function LandingPage() {
   const { data: response, isLoading } = useQuery(jobsQueryOptions());
-  const recentJobs = response?.data?.items;
+  const recentJobs = response?.data?.items ?? null;
 
   return (
     <PublicLayout>
