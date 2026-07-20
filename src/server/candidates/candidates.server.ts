@@ -41,7 +41,8 @@ export async function getOrCreateCandidate(profile: {
     );
   }
 
-  return res.json();
+  const response = res.json();
+  return response;
 }
 
 export async function updateCandidate(id: string, updates: Partial<Omit<Profile, "id" | "email">>) {

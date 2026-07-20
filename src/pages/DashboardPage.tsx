@@ -10,18 +10,21 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { Badge } from "@/components/primitives/Badge";
 import { formatDateTime, timeAgo } from "@/utils/format";
-import { dashboardItems, STATUS_TONE } from "@/utils/dashboardUtils";
+import { dashboardItems, items, STATUS_TONE } from "@/utils/dashboardUtils";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
+import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 
 export function DashboardPage() {
   //Get current user data
   const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
   const user = currentUser?.data ?? null;
 
-  const { data: response, isLoading } = useQuery(appsQueryOptions({ candidateId: user.id }));
+  //application
+  const { data: response, isLoading: appsLoading } = useQuery(
+    appsQueryOptions({ candidateId: user?.id }),
+  );
   const apps = response?.data?.items ?? null;
-  console.log(apps);
 
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],
@@ -41,8 +44,12 @@ export function DashboardPage() {
   // const active = apps.filter((a: any) => !["Rejected", "Withdrawn"].includes(a.status));
   // const interviews = apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
 
-  if (isLoading) {
-    return <div>Loading</div>;
+  if (appsLoading) {
+    return (
+      <DashboardLayout>
+        <LoadingSpinner size={16} label="Loading..." />
+      </DashboardLayout>
+    );
   }
 
   return (
@@ -51,17 +58,17 @@ export function DashboardPage() {
       subtitle="Here's the state of your job search today."
     >
       <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
-        {dashboardItems.map((s, i) => (
+        {dashboardItems.map((stat, i) => (
           <Link
-            key={s.label}
-            to={s.to as any}
+            key={stat.label}
+            to={stat.to}
             className="surface-card p-4 hover:shadow-lift hover:border-[#C7D2FE] transition-all"
           >
             <span className="h-9 w-9 grid place-items-center rounded-lg bg-[#EEF0FB] text-[#5B3FD6]">
-              <s.icon className="h-4 w-4" />
+              <stat.icon className="h-4 w-4" />
             </span>
-            <p className="mt-3 font-display text-2xl font-bold">{2 + i}</p>
-            <p className="text-xs text-[#6B7280] mt-0.5">{s.label}</p>
+            <p className="mt-3 font-display text-2xl font-bold">{stat.getValue(apps) ?? 0}</p>
+            <p className="text-xs text-[#6B7280] mt-0.5">{stat.label}</p>
           </Link>
         ))}
       </div>
@@ -73,7 +80,7 @@ export function DashboardPage() {
               <h2 className="font-display text-lg font-semibold">Recent applications</h2>
               <Link
                 to="/applications"
-                search={{ q: "engineer", candidateId: user.Id }}
+                search={{ q: "engineer", candidateId: user?.Id }}
                 className="text-sm text-[#5B3FD6] hover:underline inline-flex items-center gap-1"
               >
                 All <ArrowRight className="h-3.5 w-3.5" />
