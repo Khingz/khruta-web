@@ -19,7 +19,6 @@ export function DashboardPage() {
   //Get current user data
   const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
   const user = currentUser?.data ?? null;
-
   //application
   const { data: response, isLoading: appsLoading } = useQuery(
     appsQueryOptions({ candidateId: user?.id }),
@@ -43,6 +42,7 @@ export function DashboardPage() {
 
   // const active = apps.filter((a: any) => !["Rejected", "Withdrawn"].includes(a.status));
   // const interviews = apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
+  const interviews = apps && apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
 
   if (appsLoading) {
     return (
@@ -62,6 +62,7 @@ export function DashboardPage() {
           <Link
             key={stat.label}
             to={stat.to}
+            search={stat.to === "/applications" ? { candidateId: user?.id } : undefined}
             className="surface-card p-4 hover:shadow-lift hover:border-[#C7D2FE] transition-all"
           >
             <span className="h-9 w-9 grid place-items-center rounded-lg bg-[#EEF0FB] text-[#5B3FD6]">
@@ -80,7 +81,7 @@ export function DashboardPage() {
               <h2 className="font-display text-lg font-semibold">Recent applications</h2>
               <Link
                 to="/applications"
-                search={{ q: "engineer", candidateId: user?.Id }}
+                search={{ candidateId: user?.id }}
                 className="text-sm text-[#5B3FD6] hover:underline inline-flex items-center gap-1"
               >
                 All <ArrowRight className="h-3.5 w-3.5" />
@@ -138,7 +139,7 @@ export function DashboardPage() {
           </section> */}
         </div>
 
-        {/* <div className="space-y-6">
+        <div className="space-y-6">
           <section className="surface-card p-6">
             <h2 className="font-display text-lg font-semibold mb-4">Upcoming interviews</h2>
             {interviews.length === 0 ? (
@@ -157,7 +158,7 @@ export function DashboardPage() {
               </ul>
             )}
           </section>
-        </div> */}
+        </div>
       </div>
     </DashboardLayout>
   );

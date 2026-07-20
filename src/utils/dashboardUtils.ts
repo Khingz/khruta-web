@@ -21,12 +21,16 @@ export const items = [
 ] as const;
 
 export const STATUS_TONE: Record<string, any> = {
+  Applied: "success",
   Submitted: "info",
-  "Under Review": "warning",
-  Interview: "brand",
+  Screening: "warning",
+  "Interview Scheduled": "brand",
+  "Technical Interview": "brand",
+  "Final Interview": "brand",
   Offer: "success",
   Rejected: "error",
   Withdrawn: "default",
+  Hired: "default",
 };
 
 export const dashboardItems = [
@@ -40,3 +44,17 @@ export const dashboardItems = [
   { to: "/offers", label: "Offers", icon: Gift, getValue: (_items?: unknown[]) => 6 },
   { to: "/settings", label: "Settings", icon: Settings, getValue: (_items?: unknown[]) => 6 },
 ];
+
+export const STATUSES = [
+  "All",
+  "Applied",
+  "Screening",
+  "Interview Scheduled",
+  "Technical Interview",
+  "Final Interview",
+  "Offer",
+  "Offer Extended",
+  "Hired",
+  "Rejected",
+  "Withdrawn",
+] as const;

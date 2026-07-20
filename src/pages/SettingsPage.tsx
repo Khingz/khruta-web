@@ -23,39 +23,6 @@ export function SettingsPage() {
     <DashboardLayout title="Account settings" subtitle="Manage how Khruta works for you.">
       <div className="space-y-6 max-w-3xl">
         <section className="surface-card p-6">
-          <h2 className="font-display font-semibold text-lg">Account</h2>
-          <div className="mt-4 grid sm:grid-cols-2 gap-4">
-            <Input label="Email" defaultValue={user?.email} readOnly />
-            <Input label="Name" defaultValue={`${user?.firstName} ${user?.lastName}`} readOnly />
-          </div>
-          <p className="text-xs text-[#6B7280] mt-3">
-            Edit name and contact in{" "}
-            <a href="/profile/edit" className="text-[#5B3FD6] hover:underline">
-              profile
-            </a>
-            .
-          </p>
-        </section>
-
-        <section className="surface-card p-6">
-          <h2 className="font-display font-semibold text-lg">Password</h2>
-          <p className="text-sm text-[#6B7280] mt-1">Update your sign-in password.</p>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              push({ tone: "success", title: "Password updated" });
-            }}
-            className="mt-4 grid sm:grid-cols-2 gap-4"
-          >
-            <Input label="Current password" type="password" />
-            <Input label="New password" type="password" />
-            <div className="sm:col-span-2">
-              <Button>Update password</Button>
-            </div>
-          </form>
-        </section>
-
-        <section className="surface-card p-6">
           <h2 className="font-display font-semibold text-lg">Notifications</h2>
           <p className="text-sm text-[#6B7280] mt-1">Choose what we email you about.</p>
           <div className="mt-4 space-y-3">

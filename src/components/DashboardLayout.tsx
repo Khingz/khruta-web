@@ -4,6 +4,8 @@ import { Navbar } from "./Navbar";
 import { useAuth } from "@clerk/tanstack-react-start";
 import { cn } from "@/utils/format";
 import { menuItems } from "@/utils/navUtils";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { useSuspenseQuery } from "@tanstack/react-query";
 
 export function DashboardLayout({
   children,
@@ -19,6 +21,8 @@ export function DashboardLayout({
   const { isLoaded, isSignedIn } = useAuth();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
+  const user = currentUser?.data ?? null;
 
   useEffect(() => {
     if (isLoaded && !isSignedIn) navigate({ to: "/login", search: { redirect: pathname } as any });
@@ -45,6 +49,7 @@ export function DashboardLayout({
                 <Link
                   key={to}
                   to={to as any}
+                  search={to === "/applications" ? { candidateId: user?.id } : undefined}
                   className={cn(
                     "flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors",
                     active

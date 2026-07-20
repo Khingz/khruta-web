@@ -3,49 +3,35 @@ import { Badge } from "@/components/primitives/Badge";
 import { Button } from "@/components/primitives/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { applicationsApi } from "@/api/applicationsApi";
 import { Link } from "@tanstack/react-router";
 import { Briefcase } from "lucide-react";
 import { timeAgo } from "@/utils/format";
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
-
-const STATUSES = [
-  "All",
-  "Submitted",
-  "Under Review",
-  "Interview",
-  "Offer",
-  "Rejected",
-  "Withdrawn",
-] as const;
-const TONE: Record<string, any> = {
-  Submitted: "info",
-  "Under Review": "warning",
-  Interview: "brand",
-  Offer: "success",
-  Rejected: "error",
-  Withdrawn: "default",
-};
+import { STATUS_TONE, STATUSES } from "@/utils/dashboardUtils";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { appsQueryOptions } from "@/queries/application.queries";
+import { Route } from "@/routes/applications";
 
 export function ApplicationsPage() {
   const qc = useQueryClient();
   const { push } = useToast();
-  const { data = [], isLoading } = useQuery({
-    queryKey: ["applications"],
-    queryFn: () => applicationsApi.list(),
-  });
   const [filter, setFilter] = useState<(typeof STATUSES)[number]>("All");
-  const withdraw = useMutation({
-    mutationFn: (id: string) => applicationsApi.withdraw(id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["applications"] });
-      push({ tone: "success", title: "Application withdrawn" });
-    },
-  });
+  //Get current user data
+  // const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
+  // const user = currentUser?.data ?? null;
+  const { candidateId } = Route.useRouteContext();
+  //application
+  const { data: response, isLoading } = useQuery(
+    appsQueryOptions({ candidateId, stage: filter === "All" ? undefined : filter }),
+  );
+  const data = response?.data?.items ?? [];
 
-  const filtered = filter === "All" ? data : data.filter((a) => a.status === filter);
+  const handleFilter = (key: (typeof STATUSES)[number]) => {
+    setFilter(key);
+  };
 
   return (
     <DashboardLayout title="My applications" subtitle="Track every application in one place.">
@@ -53,20 +39,16 @@ export function ApplicationsPage() {
         {STATUSES.map((s) => (
           <button
             key={s}
-            onClick={() => setFilter(s)}
+            onClick={() => handleFilter(s)}
             className={`px-3 py-1.5 rounded-full text-sm border transition-colors ${filter === s ? "gradient-brand text-white border-transparent" : "bg-white border-[#E5E7EB] text-[#1F2937] hover:bg-[#F8FAFC]"}`}
           >
             {s}
-            {s !== "All" && (
-              <span className="ml-1.5 opacity-70">{data.filter((a) => a.status === s).length}</span>
-            )}
           </button>
         ))}
       </div>
-
       {isLoading ? (
         <LoadingSpinner />
-      ) : filtered.length === 0 ? (
+      ) : data?.length === 0 ? (
         <EmptyState
           icon={<Briefcase className="h-5 w-5" />}
           title="No applications"
@@ -89,7 +71,7 @@ export function ApplicationsPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[#F1F5F9]">
-              {filtered.map((a) => (
+              {data?.map((a: any) => (
                 <tr key={a.id} className="hover:bg-[#F8FAFC]">
                   <td className="px-5 py-4">
                     <Link
@@ -97,20 +79,20 @@ export function ApplicationsPage() {
                       params={{ id: a.jobId }}
                       className="font-medium hover:text-[#5B3FD6]"
                     >
-                      {a.job.title}
+                      {a.jobTitle}
                     </Link>
                     <p className="text-xs text-[#6B7280]">
-                      {a.job.company} · {a.job.location}
+                      {a.company} · {a.jobLocation}
                     </p>
                     {a.nextStep && (
                       <p className="text-xs mt-1 text-[#5B3FD6]">Next: {a.nextStep}</p>
                     )}
                   </td>
                   <td className="px-5 py-4 hidden sm:table-cell text-[#6B7280]">
-                    {timeAgo(a.appliedAt)}
+                    {timeAgo(a.dateApplied)}
                   </td>
                   <td className="px-5 py-4">
-                    <Badge tone={TONE[a.status]}>{a.status}</Badge>
+                    <Badge tone={STATUS_TONE[a.stage]}>{a.stage}</Badge>
                   </td>
                   <td className="px-5 py-4 text-right">
                     <div className="inline-flex gap-1">
@@ -119,11 +101,6 @@ export function ApplicationsPage() {
                           View
                         </Button>
                       </Link>
-                      {!["Withdrawn", "Rejected"].includes(a.status) && (
-                        <Button size="sm" variant="ghost" onClick={() => withdraw.mutate(a.id)}>
-                          Withdraw
-                        </Button>
-                      )}
                     </div>
                   </td>
                 </tr>
