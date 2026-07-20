@@ -24,6 +24,7 @@ export type Application = {
   status: "Submitted" | "Under Review" | "Interview" | "Offer" | "Rejected" | "Withdrawn";
   nextStep?: string;
   interviewAt?: string;
+  payload: any;
 };
 
 export type Offer = {

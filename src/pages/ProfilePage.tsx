@@ -33,7 +33,7 @@ export function ProfilePage() {
 
             <div className="surface-card p-6">
               <p className="text-sm text-[#6B7280]">Skills tracked</p>
-              <p className="font-display text-2xl font-bold mt-1">{user.skills.length}</p>
+              <p className="font-display text-2xl font-bold mt-1">{user.skills?.length}</p>
             </div>
           </div>
         </div>
