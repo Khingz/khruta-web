@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Badge } from "@/components/primitives/Badge";
 import { Button } from "@/components/primitives/Button";
 import { EmptyState } from "@/components/EmptyState";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { applicationsApi } from "@/api/applicationsApi";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
 import {
@@ -19,27 +19,24 @@ import {
 import { formatSalary, timeAgo } from "@/utils/format";
 import { useToast } from "@/components/Toast";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
-
-const TONE: Record<string, any> = {
-  Submitted: "info",
-  "Under Review": "warning",
-  Interview: "brand",
-  Offer: "success",
-  Rejected: "error",
-  Withdrawn: "default",
-};
-const STEPS = ["Submitted", "Under Review", "Interview", "Offer"] as const;
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { STATUS_TONE, CANDIDATE_STATUSES as STATUSES } from "@/utils/dashboardUtils";
+import { appQueryOptions } from "@/queries/application.queries";
 
 export function ApplicationDetailsPage() {
   const { id } = useParams({ from: "/applications_/$id" });
+  //Get current user data
+  const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
+  const user = currentUser?.data ?? null;
+  console.log(user);
+
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { push } = useToast();
 
-  const { data: app, isLoading } = useQuery({
-    queryKey: ["application", id],
-    queryFn: () => applicationsApi.getById(id),
-  });
+  const { data: response, isLoading } = useQuery(appQueryOptions(id));
+  const app = response && response.data;
+  console.log(app);
 
   const withdraw = useMutation({
     mutationFn: () => applicationsApi.withdraw(id),
@@ -62,7 +59,7 @@ export function ApplicationDetailsPage() {
         <EmptyState
           title="Application not found"
           action={
-            <Link to="/applications">
+            <Link to="/applications" search={{ candidateId: user?.id }}>
               <Button>Back to applications</Button>
             </Link>
           }
@@ -70,13 +67,13 @@ export function ApplicationDetailsPage() {
       </DashboardLayout>
     );
 
-  const currentStepIdx = STEPS.indexOf(app.status as any);
-  const p = app.payload;
+  const currentStepIdx = STATUSES.indexOf(app.stage as any);
+  const p = app;
 
   return (
-    <DashboardLayout title="Application details" subtitle={`Applied ${timeAgo(app.appliedAt)}`}>
+    <DashboardLayout title="Application details" subtitle={`Applied ${timeAgo(app.dateApplied)}`}>
       <button
-        onClick={() => navigate({ to: "/applications" })}
+        onClick={() => navigate({ to: "/applications", search: { candidateId: user?.id ?? "" } })}
         className="inline-flex items-center gap-1 text-sm text-[#6B7280] hover:text-[#1F2937] mb-5"
       >
         <ArrowLeft className="h-4 w-4" />
@@ -89,7 +86,7 @@ export function ApplicationDetailsPage() {
           <div className="surface-card p-6">
             <div className="flex items-start gap-4">
               <div className="h-14 w-14 rounded-2xl gradient-brand text-white grid place-items-center text-xl font-display font-bold shrink-0">
-                {app.job.company[0]}
+                {app.company.slice(0, 2).toUpperCase()}
               </div>
               <div className="flex-1 min-w-0">
                 <Link
@@ -97,28 +94,28 @@ export function ApplicationDetailsPage() {
                   params={{ id: app.jobId }}
                   className="font-display text-xl font-semibold hover:text-[#5B3FD6]"
                 >
-                  {app.job.title}
+                  {app.jobTitle}
                 </Link>
-                <p className="text-[#6B7280]">{app.job.company}</p>
+                <p className="text-[#6B7280]">{app.company}</p>
                 <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1 text-sm text-[#6B7280]">
                   <span className="inline-flex items-center gap-1.5">
                     <MapPin className="h-4 w-4" />
-                    {app.job.location}
+                    {app.jobLocation}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <Briefcase className="h-4 w-4" />
-                    {app.job.type}
+                    {app.type}
                   </span>
                   <span className="inline-flex items-center gap-1.5">
                     <Clock className="h-4 w-4" />
-                    {timeAgo(app.job.postedAt)}
+                    {timeAgo(app.postedDate)}
                   </span>
                 </div>
                 <p className="mt-3 font-semibold">
-                  {formatSalary(app.job.salaryMin, app.job.salaryMax, app.job.currency)}
+                  {formatSalary(app.minSalary, app.maxSalary, "USD")}
                 </p>
               </div>
-              <Badge tone={TONE[app.status]}>{app.status}</Badge>
+              <Badge tone={STATUS_TONE[app.stage]}>{app.stage}</Badge>
             </div>
           </div>
 
@@ -126,9 +123,9 @@ export function ApplicationDetailsPage() {
           <div className="surface-card p-6">
             <h3 className="font-display font-semibold mb-4">Progress</h3>
             <ol className="grid grid-cols-4 gap-2">
-              {STEPS.map((s, i) => {
+              {STATUSES.map((s, i) => {
                 const done =
-                  currentStepIdx >= i && app.status !== "Rejected" && app.status !== "Withdrawn";
+                  currentStepIdx >= i && app.stage !== "Rejected" && app.stage !== "Withdrawn";
                 const active = i === currentStepIdx;
                 return (
                   <li key={s} className="text-center">
@@ -150,52 +147,43 @@ export function ApplicationDetailsPage() {
           </div>
 
           {/* Submitted details */}
-          {p && (
+          {user && app && (
             <div className="surface-card p-6">
               <h3 className="font-display font-semibold mb-4">Submitted details</h3>
               <dl className="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                <Row label="Full name" value={p.fullName} />
-                <Row label="Email" icon={<Mail className="h-3.5 w-3.5" />} value={p.email} />
-                {p.phone && (
-                  <Row label="Phone" icon={<Phone className="h-3.5 w-3.5" />} value={p.phone} />
+                <Row label="Full name" value={user?.fullname} />
+                <Row label="Email" icon={<Mail className="h-3.5 w-3.5" />} value={user?.email} />
+                {user.phone && (
+                  <Row label="Phone" icon={<Phone className="h-3.5 w-3.5" />} value={user?.phone} />
                 )}
-                {p.location && (
+                {app.yearsOfExperience && (
                   <Row
-                    label="Location"
-                    icon={<MapPin className="h-3.5 w-3.5" />}
-                    value={p.location}
-                  />
-                )}
-                {p.linkedin && (
-                  <Row
-                    label="LinkedIn"
-                    icon={<Linkedin className="h-3.5 w-3.5" />}
-                    value={p.linkedin}
-                  />
-                )}
-                {p.portfolio && (
-                  <Row
-                    label="Portfolio"
-                    icon={<Globe className="h-3.5 w-3.5" />}
-                    value={p.portfolio}
+                    label="Experience"
+                    icon={<Briefcase className="h-3.5 w-3.5" />}
+                    value={`${app.yearsOfExperience} ${app.yearsOfExperience === 1 ? "year" : "years"}`}
                   />
                 )}
               </dl>
-              {p.resumeName && (
-                <div className="mt-5 flex items-center gap-3 rounded-[10px] border border-[#E5E7EB] bg-[#F8FAFC] px-4 py-3">
+              {app.resumeLink && (
+                <a
+                  href={p.resumeLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mt-5 flex items-center gap-3 rounded-[10px] border border-[#E5E7EB] bg-[#F8FAFC] px-4 py-3 transition-colors hover:bg-[#F1F5F9]"
+                >
                   <div className="h-9 w-9 rounded-lg gradient-brand text-white grid place-items-center">
                     <FileText className="h-4 w-4" />
                   </div>
-                  <p className="text-sm font-medium">{p.resumeName}</p>
-                </div>
+                  <p className="text-sm font-medium">Resume</p>
+                </a>
               )}
-              {p.coverLetter && (
+              {app.coverLetter && (
                 <div className="mt-5">
                   <p className="text-xs uppercase tracking-wider text-[#6B7280] mb-1.5">
                     Cover letter
                   </p>
-                  <p className="text-sm whitespace-pre-wrap text-[#1F2937] leading-relaxed">
-                    {p.coverLetter}
+                  <p className="text-sm whitespace-pre-wrap text-[#1F2937] leading-relaxed rounded-[10px] border border-[#E5E7EB] bg-[#F8FAFC] px-4 py-3">
+                    {app.coverLetter}
                   </p>
                 </div>
               )}
@@ -209,7 +197,7 @@ export function ApplicationDetailsPage() {
             <ul className="text-sm space-y-3">
               <li className="flex justify-between">
                 <span className="text-[#6B7280]">Applied</span>
-                <span>{timeAgo(app.appliedAt)}</span>
+                <span>{timeAgo(app.dateApplied)}</span>
               </li>
               {app.interviewAt && (
                 <li className="flex justify-between">
@@ -219,7 +207,7 @@ export function ApplicationDetailsPage() {
               )}
               <li className="flex justify-between">
                 <span className="text-[#6B7280]">Status</span>
-                <Badge tone={TONE[app.status]}>{app.status}</Badge>
+                <Badge tone={STATUS_TONE[app.stage]}>{app.stage}</Badge>
               </li>
             </ul>
           </div>
@@ -230,7 +218,7 @@ export function ApplicationDetailsPage() {
                 View job posting
               </Button>
             </Link>
-            {!["Withdrawn", "Rejected"].includes(app.status) && (
+            {!["Withdrawn", "Rejected"].includes(app.stage) && (
               <Button
                 variant="ghost"
                 className="w-full"

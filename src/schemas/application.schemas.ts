@@ -8,3 +8,9 @@ export const AppFiltersSchema = z.object({
 });
 
 export type AppFilters = z.infer<typeof AppFiltersSchema>;
+
+export const AppIdSchema = z
+  .string()
+  .regex(/^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/, "Invalid Salesforce ID format");
+
+export type AppId = z.infer<typeof AppIdSchema>;

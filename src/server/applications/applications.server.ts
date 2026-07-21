@@ -1,4 +1,4 @@
-import { AppFilters } from "@/schemas/application.schemas";
+import { AppFilters, AppId } from "@/schemas/application.schemas";
 import { getSalesforceToken } from "../salesforce.server";
 import { auth } from "@clerk/tanstack-react-start/server";
 
@@ -31,4 +31,27 @@ export async function getUserApplications(filters: AppFilters) {
   }
   const json = await res.json();
   return json;
+}
+
+export async function getApplicationById(id: AppId) {
+  const { userId, isAuthenticated } = await auth();
+
+  if (!isAuthenticated || !userId) {
+    throw new Error("Unauthorized");
+  }
+  const { accessToken, instanceUrl } = await getSalesforceToken();
+  const res = await fetch(`${instanceUrl}/services/apexrest/applications/${id}`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "X-Verified-Clerk-Id": userId,
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error(`Salesforce error (${res.status}):`, errorBody);
+    throw new Error(`Failed to fetch application (${res.status}): ${errorBody}`);
+  }
+  return res.json();
 }

@@ -22,15 +22,15 @@ export const items = [
 
 export const STATUS_TONE: Record<string, any> = {
   Applied: "success",
-  Submitted: "info",
-  Screening: "warning",
+  Screening: "info",
   "Interview Scheduled": "brand",
   "Technical Interview": "brand",
   "Final Interview": "brand",
-  Offer: "success",
+  Offer: "info",
+  "Offer Extended": "info",
   Rejected: "error",
   Withdrawn: "default",
-  Hired: "default",
+  Hired: "success",
 };
 
 export const dashboardItems = [
@@ -58,3 +58,5 @@ export const STATUSES = [
   "Rejected",
   "Withdrawn",
 ] as const;
+
+export const CANDIDATE_STATUSES = STATUSES.filter((status) => status !== "All");
