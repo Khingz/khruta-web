@@ -41,12 +41,15 @@ export function ApplyPage() {
   const apply = useMutation({
     mutationFn: (formData: ApplyPayload) => createApp({ data: formData }),
     onSuccess: (updated: any) => {
-      qc.setQueryData(appsQueryOptions({ candidateId }).queryKey, (old: any) => ({
-        ...old,
-        data: { ...old.data, ...updated.data },
-      }));
-      push({ tone: "success", title: "Profile updated" });
-      navigate({ to: "/profile" });
+      qc.setQueryData(appsQueryOptions({ candidateId }).queryKey, (old: any) => {
+        if (!old) return old;
+        return {
+          ...old,
+          data: { ...old.data, ...updated.data },
+        };
+      });
+      push({ tone: "success", title: "Application submitted successfully" });
+      navigate({ to: "/applications", search: { candidateId } });
     },
     onError: (err: Error) => {
       push({ tone: "error", title: err.message });
