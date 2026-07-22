@@ -1,26 +1,29 @@
 import { PublicLayout } from "@/components/PublicLayout";
 import { Button } from "@/components/primitives/Button";
 import { Input, Textarea } from "@/components/primitives/Input";
-import { Badge } from "@/components/primitives/Badge";
 import { EmptyState } from "@/components/EmptyState";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { jobsApi } from "@/api/jobsApi";
 import { profileApi } from "@/api/profileApi";
 import { useParams, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { formatSalary } from "@/utils/format";
-import { ArrowLeft, MapPin, Briefcase, Lock, FileText, Check } from "lucide-react";
+import { ArrowLeft, MapPin, Briefcase, Lock, Check } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { useEffect } from "react";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { ApplyPayload } from "@/types";
 import { jobQueryOptions } from "@/queries/job.queries";
+import { Route } from "@/routes/jobs_.$id.apply";
+import { createApp } from "@/server/applications/applications.function";
+import { appsQueryOptions } from "@/queries/application.queries";
 
 export function ApplyPage() {
   const { id } = useParams({ from: "/jobs_/$id/apply" });
 
   const { data: response, isLoading } = useQuery(jobQueryOptions(id));
   const job = response && response.data;
+
+  const { candidateId } = Route.useRouteContext();
 
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -33,19 +36,36 @@ export function ApplyPage() {
     handleSubmit,
     reset,
     formState: { errors, isSubmitting },
-  } = useForm<ApplyPayload>({
-    defaultValues: {
-      resumeLink: "",
+  } = useForm<ApplyPayload>();
+
+  const apply = useMutation({
+    mutationFn: (formData: ApplyPayload) => createApp({ data: formData }),
+    onSuccess: (updated: any) => {
+      qc.setQueryData(appsQueryOptions({ candidateId }).queryKey, (old: any) => ({
+        ...old,
+        data: { ...old.data, ...updated.data },
+      }));
+      push({ tone: "success", title: "Profile updated" });
+      navigate({ to: "/profile" });
+    },
+    onError: (err: Error) => {
+      push({ tone: "error", title: err.message });
     },
   });
 
   useEffect(() => {
-    if (profile) {
-      reset({});
+    if (job && candidateId) {
+      reset({
+        jobOpeningId: job.Id,
+        candidateId,
+        yearsOfExperience: undefined,
+        coverLetter: "",
+        resumeLink: "",
+        currentEmployer: "",
+        currentRole: "",
+      });
     }
-  }, [profile, reset]);
-
-  const apply = useMutation({});
+  }, [job, reset, candidateId]);
 
   if (isLoading)
     return (
@@ -68,6 +88,10 @@ export function ApplyPage() {
         />
       </PublicLayout>
     );
+
+  const onSubmit = (data: ApplyPayload) => {
+    apply.mutate(data);
+  };
 
   return (
     <PublicLayout>
@@ -111,7 +135,7 @@ export function ApplyPage() {
           </div>
         </div>
 
-        <form onSubmit={() => console.log("submitting")} className="mt-8 space-y-6">
+        <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-6">
           <section className="surface-card p-6">
             <h3 className="font-display font-semibold mb-4">Your details</h3>
             <div className="grid sm:grid-cols-2 gap-4">
