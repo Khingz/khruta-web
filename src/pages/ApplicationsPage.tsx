@@ -19,10 +19,8 @@ export function ApplicationsPage() {
   const qc = useQueryClient();
   const { push } = useToast();
   const [filter, setFilter] = useState<(typeof STATUSES)[number]>("All");
-  //Get current user data
-  // const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
-  // const user = currentUser?.data ?? null;
   const { candidateId } = Route.useRouteContext();
+
   //application
   const { data: response, isLoading } = useQuery(
     appsQueryOptions({ candidateId, stage: filter === "All" ? undefined : filter }),

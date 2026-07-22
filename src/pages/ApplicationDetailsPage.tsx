@@ -28,7 +28,6 @@ export function ApplicationDetailsPage() {
   //Get current user data
   const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
   const user = currentUser?.data ?? null;
-  console.log(user);
 
   const navigate = useNavigate();
   const qc = useQueryClient();
@@ -36,7 +35,6 @@ export function ApplicationDetailsPage() {
 
   const { data: response, isLoading } = useQuery(appQueryOptions(id));
   const app = response && response.data;
-  console.log(app);
 
   const withdraw = useMutation({
     mutationFn: () => applicationsApi.withdraw(id),
