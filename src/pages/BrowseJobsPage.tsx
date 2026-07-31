@@ -78,7 +78,7 @@ export function BrowseJobsPage() {
               </Button>
             </div>
 
-            {!jobs.items.length ? (
+            {!jobs?.items.length ? (
               <EmptyState
                 icon={<SearchIcon className="h-5 w-5" />}
                 title="No jobs match your search"
@@ -100,6 +100,11 @@ export function BrowseJobsPage() {
                         salaryMin: j.MinOffer,
                         salaryMax: j.MaxOffer,
                         currency: "USD",
+                        description: j.Description,
+                        responsibilities: j.Responsibilities,
+                        requirements: j.Requirements,
+                        benefits: j.Benefits,
+                        skills: j.Skills,
                       }}
                     />
                   ))}

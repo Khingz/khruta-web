@@ -1,5 +1,6 @@
 import { JobFilters, JobId } from "@/schemas/job.schemas";
 import { getSalesforceToken } from "../salesforce.server";
+import { CandidateId } from "@/schemas/candidate .schemas";
 
 export async function getJobOpenings(filters: JobFilters) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
@@ -27,6 +28,24 @@ export async function getJobOpenings(filters: JobFilters) {
 export async function getJobOpeningById(id: JobId) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
   const res = await fetch(`${instanceUrl}/services/apexrest/jobOpening/${id}`, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error(`Salesforce error (${res.status}):`, errorBody);
+    throw new Error(`Failed to fetch job opening (${res.status}): ${errorBody}`);
+  }
+  return res.json();
+}
+
+export async function getRecommendedJobs(id: CandidateId) {
+  const { accessToken, instanceUrl } = await getSalesforceToken();
+  const params = new URLSearchParams({
+    recommend: "true",
+    candidateId: id,
+  });
+  const res = await fetch(`${instanceUrl}/services/apexrest/jobOpening?${params.toString()}`, {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
 

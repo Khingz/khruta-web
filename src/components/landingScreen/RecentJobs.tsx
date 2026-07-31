@@ -36,6 +36,11 @@ export const RecentJobs = ({ recentJobs, isLoading }: any) => {
                   salaryMin: j.MinOffer,
                   salaryMax: j.MaxOffer,
                   currency: "USD",
+                  description: j.Description,
+                  responsibilities: j.Responsibilities,
+                  requirements: j.Requirements,
+                  benefits: j.Benefits,
+                  skills: j.Skills,
                 }}
               />
             ))}
