@@ -14,12 +14,12 @@ import { dashboardItems, items, STATUS_TONE } from "@/utils/dashboardUtils";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
+import { jobReommendOptions } from "@/queries/job.queries";
 
 export function DashboardPage() {
   //Get current user data
   const { data: currentUser } = useSuspenseQuery(candidateProfileQuery);
   const user = currentUser?.data ?? null;
-
   //application
   const { data: response, isLoading: appsLoading } = useQuery(
     appsQueryOptions({ candidateId: user?.id }),
@@ -32,17 +32,20 @@ export function DashboardPage() {
     staleTime: 0,
   });
   const { data: offers = [] } = useQuery({ queryKey: ["offers"], queryFn: () => offersApi.list() });
+
   const { data: notes = [] } = useQuery({
     queryKey: ["notifications"],
     queryFn: () => notificationsApi.list(),
   });
-  const { data: recommended = [] } = useQuery({
-    queryKey: ["recommended"],
-    queryFn: () => jobsApi.recommended(),
-  });
+
+  const { data: recomendResponse, isLoading: recommendLoading } = useQuery(
+    jobReommendOptions(user?.id),
+  );
+  const recommended = recomendResponse?.data?.items ?? [];
 
   // const active = apps.filter((a: any) => !["Rejected", "Withdrawn"].includes(a.status));
   // const interviews = apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
+  const interviews = apps && apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
 
   if (appsLoading) {
     return (
@@ -62,6 +65,7 @@ export function DashboardPage() {
           <Link
             key={stat.label}
             to={stat.to}
+            search={stat.to === "/applications" ? { candidateId: user?.id } : undefined}
             className="surface-card p-4 hover:shadow-lift hover:border-[#C7D2FE] transition-all"
           >
             <span className="h-9 w-9 grid place-items-center rounded-lg bg-[#EEF0FB] text-[#5B3FD6]">
@@ -80,7 +84,7 @@ export function DashboardPage() {
               <h2 className="font-display text-lg font-semibold">Recent applications</h2>
               <Link
                 to="/applications"
-                search={{ q: "engineer", candidateId: user?.Id }}
+                search={{ candidateId: user?.id }}
                 className="text-sm text-[#5B3FD6] hover:underline inline-flex items-center gap-1"
               >
                 All <ArrowRight className="h-3.5 w-3.5" />
@@ -120,28 +124,51 @@ export function DashboardPage() {
             )}
           </section>
 
-          {/* <section className="surface-card p-6">
+          <section className="surface-card p-6">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-display text-lg font-semibold">Recommended for you</h2>
               <Link
                 to="/jobs"
                 className="text-sm text-[#5B3FD6] hover:underline inline-flex items-center gap-1"
               >
-                More <ArrowRight className="h-3.5 w-3.5" />
+                All Jobs <ArrowRight className="h-3.5 w-3.5" />
               </Link>
             </div>
-            <div className="grid sm:grid-cols-2 gap-3">
-              {recommended.slice(0, 4).map((j) => (
-                <JobCard key={j.id} job={j} compact />
-              ))}
+            <div className="grid sm:grid-cols-1 gap-3">
+              {!recommendLoading && recommended.length > 0 ? (
+                recommended.slice(0, 4).map((job: any) => (
+                  <JobCard
+                    key={job.id}
+                    job={{
+                      id: job.Id,
+                      title: job.Title,
+                      company: job.CompanyName,
+                      location: job.Location,
+                      type: job.Type,
+                      postedAt: job.OpenDate,
+                      salaryMin: job.MinOffer,
+                      salaryMax: job.MaxOffer,
+                      currency: "USD",
+                      description: job.Description,
+                      responsibilities: job.Responsibilities,
+                      requirements: job.Requirements,
+                      benefits: job.Benefits,
+                      skills: job.Skills,
+                    }}
+                    compact
+                  />
+                ))
+              ) : (
+                <p className="text-sm text-[#6B7280]">You do not have any job recommendation</p>
+              )}
             </div>
-          </section> */}
+          </section>
         </div>
 
-        {/* <div className="space-y-6">
+        <div className="space-y-6">
           <section className="surface-card p-6">
             <h2 className="font-display text-lg font-semibold mb-4">Upcoming interviews</h2>
-            {interviews.length === 0 ? (
+            {!interviews || interviews.length === 0 ? (
               <p className="text-sm text-[#6B7280]">No interviews scheduled.</p>
             ) : (
               <ul className="space-y-3">
@@ -157,7 +184,7 @@ export function DashboardPage() {
               </ul>
             )}
           </section>
-        </div> */}
+        </div>
       </div>
     </DashboardLayout>
   );

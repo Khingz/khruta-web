@@ -63,3 +63,13 @@ export type Profile = {
 };
 
 export type User = { id: string; email: string; firstName: string; lastName: string };
+
+export type ApplyPayload = {
+  jobOpeningId: string;
+  candidateId: string;
+  yearsOfExperience?: number;
+  coverLetter?: string;
+  resumeLink?: string;
+  currentEmployer?: string;
+  currentRole?: string;
+};

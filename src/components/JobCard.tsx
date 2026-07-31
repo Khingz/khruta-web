@@ -1,12 +1,12 @@
 import { Link } from "@tanstack/react-router";
 import { Bookmark, MapPin, Briefcase, Clock } from "lucide-react";
-import type { Job, JobCompact } from "@/types";
+import type { Job } from "@/types";
 import { formatSalary, timeAgo, cn } from "@/utils/format";
 import { Badge } from "./primitives/Badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { jobsApi } from "@/api/jobsApi";
 
-export function JobCard({ job, compact = false }: { job: JobCompact; compact?: boolean }) {
+export function JobCard({ job, compact = false }: { job: Job; compact?: boolean }) {
   const qc = useQueryClient();
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],
