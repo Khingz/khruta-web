@@ -6,8 +6,7 @@ import { applicationsApi } from "@/api/applicationsApi";
 import { offersApi } from "@/api/offersApi";
 import { notificationsApi } from "@/api/notificationsApi";
 import { jobsApi } from "@/api/jobsApi";
-import { Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Link as LinkIcon } from "lucide-react";
 import { Badge } from "@/components/primitives/Badge";
 import { formatDateTime, timeAgo } from "@/utils/format";
 import { dashboardItems, items, STATUS_TONE } from "@/utils/dashboardUtils";
@@ -15,6 +14,8 @@ import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { jobReommendOptions } from "@/queries/job.queries";
+import { intsQueryOptions } from "@/queries/interview.queries";
+import { Link } from "@tanstack/react-router";
 
 export function DashboardPage() {
   //Get current user data
@@ -25,6 +26,13 @@ export function DashboardPage() {
     appsQueryOptions({ candidateId: user?.id }),
   );
   const apps = response?.data?.items ?? null;
+
+  //interviews
+  const { data: intResponse, isLoading: intLoading } = useQuery(
+    intsQueryOptions({ candidateId: user?.id }),
+  );
+  const interviews = intResponse?.data?.items ?? null;
+  console.log(interviews);
 
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],
@@ -42,10 +50,6 @@ export function DashboardPage() {
     jobReommendOptions(user?.id),
   );
   const recommended = recomendResponse?.data?.items ?? [];
-
-  // const active = apps.filter((a: any) => !["Rejected", "Withdrawn"].includes(a.status));
-  // const interviews = apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
-  const interviews = apps && apps.filter((a: any) => a.status === "Interview" && a.interviewAt);
 
   if (appsLoading) {
     return (
@@ -174,11 +178,39 @@ export function DashboardPage() {
               <ul className="space-y-3">
                 {interviews.map((a: any) => (
                   <li key={a.id} className="p-3 rounded-lg bg-[#F8F7FF] border border-[#E0E7FF]">
-                    <p className="text-sm font-medium">{a.job.title}</p>
-                    <p className="text-xs text-[#6B7280]">{a.job.company}</p>
+                    {/* <p className="text-sm font-medium">{a.jobName}</p>
+                    <p className="text-xs text-[#6B7280]">{a.companyName}</p>
                     <p className="text-xs mt-1.5 text-[#5B3FD6] font-medium">
-                      {formatDateTime(a.interviewAt!)}
+                      {formatDateTime(a.interviewDate!)}
+                    </p> */}
+                    <div className="flex items-start justify-between gap-2">
+                      <div>
+                        <p className="text-sm font-medium">{a.jobName}</p>
+                        <p className="text-xs text-[#6B7280]">{a.companyName}</p>
+                      </div>
+                      {a.meetingLink && (
+                        <a
+                          href={a.meetingLink}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-[#5B3FD6] hover:text-[#4527A0] transition-colors shrink-0"
+                          aria-label="Open meeting link"
+                        >
+                          <LinkIcon className="w-4 h-4" />
+                        </a>
+                      )}
+                    </div>
+                    <p className="text-xs mt-1.5 text-[#5B3FD6] font-medium">
+                      {formatDateTime(a.interviewDate!)}
                     </p>
+
+                    <div className="flex items-center gap-1.5 mt-1 text-[11px] text-[#6B7280]">
+                      <span>{a.duration} min</span>
+                      <span className="text-[#D1D5DB]">•</span>
+                      <span>{a.interviewFormat}</span>
+                      <span className="text-[#D1D5DB]">•</span>
+                      <span>{a.round} round</span>
+                    </div>
                   </li>
                 ))}
               </ul>

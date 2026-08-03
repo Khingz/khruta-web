@@ -1,4 +1,4 @@
-import { CandidateId } from "@/schemas/candidate .schemas";
+import { CandidateId } from "@/schemas/candidate.schemas";
 import { JobFilters, JobId } from "@/schemas/job.schemas";
 import { getJobById, getJobRecommendation, getJobs } from "@/server/jobs/jobs.functions";
 import { queryOptions } from "@tanstack/react-query";
