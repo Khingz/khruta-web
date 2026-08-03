@@ -1,7 +1,7 @@
 import { JobFiltersSchema, JobIdSchema } from "@/schemas/job.schemas";
 import { createServerFn } from "@tanstack/react-start";
 import { getJobOpeningById, getJobOpenings, getRecommendedJobs } from "./jobs.server";
-import { CandidateIdSchema } from "@/schemas/candidate .schemas";
+import { CandidateIdSchema } from "@/schemas/candidate.schemas";
 
 export const getJobs = createServerFn({ method: "GET" })
   .validator((filters?: unknown) => JobFiltersSchema.parse(filters ?? {}))

@@ -13,7 +13,7 @@ export async function getUserApplications(filters: AppFilters) {
 
   const params = new URLSearchParams();
 
-  if (filters.q) params.set("q", filters.q);
+  params.set("candidateId", filters.candidateId);
   if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
   if (filters.stage) params.set("stage", String(filters.stage));
 

@@ -1,6 +1,6 @@
 import { JobFilters, JobId } from "@/schemas/job.schemas";
 import { getSalesforceToken } from "../salesforce.server";
-import { CandidateId } from "@/schemas/candidate .schemas";
+import { CandidateId } from "@/schemas/candidate.schemas";
 
 export async function getJobOpenings(filters: JobFilters) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
