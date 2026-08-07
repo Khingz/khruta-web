@@ -1,6 +1,11 @@
 import { JobFiltersSchema, JobIdSchema } from "@/schemas/job.schemas";
 import { createServerFn } from "@tanstack/react-start";
-import { getJobOpeningById, getJobOpenings, getRecommendedJobs } from "./jobs.server";
+import {
+  getJobOpeningById,
+  getJobOpenings,
+  getRecommendedJobs,
+  getUserSavedJobs,
+} from "./jobs.server";
 import { CandidateIdSchema } from "@/schemas/candidate.schemas";
 
 export const getJobs = createServerFn({ method: "GET" })
@@ -19,4 +24,10 @@ export const getJobRecommendation = createServerFn({ method: "GET" })
   .validator(CandidateIdSchema)
   .handler(async ({ data: id }) => {
     return getRecommendedJobs(id);
+  });
+
+export const getSavedJobs = createServerFn({ method: "GET" })
+  .validator(CandidateIdSchema)
+  .handler(async ({ data: id }) => {
+    return getUserSavedJobs(id);
   });

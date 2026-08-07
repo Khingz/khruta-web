@@ -38,7 +38,7 @@ export const CategorySection = () => {
                 key={c.slug}
                 to="/jobs"
                 search={{ category: c.name } as any}
-                className="surface-card p-5 hover:shadow-lift hover:border-[#C7D2FE] transition-all flex items-center gap-3"
+                className="surface-card p-5 hover:shadow-lift hover:border-[#C7D2FE] transition-all block md:flex md:items-center md:gap-3"
               >
                 <span className="h-10 w-10 rounded-xl gradient-brand text-white grid place-items-center">
                   <Icon className="h-5 w-5" />

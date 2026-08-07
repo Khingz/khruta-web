@@ -1,6 +1,11 @@
 import { CandidateId } from "@/schemas/candidate.schemas";
-import { JobFilters, JobId } from "@/schemas/job.schemas";
-import { getJobById, getJobRecommendation, getJobs } from "@/server/jobs/jobs.functions";
+import { JobFilters, JobId, savedJobFilters } from "@/schemas/job.schemas";
+import {
+  getJobById,
+  getJobRecommendation,
+  getJobs,
+  getSavedJobs,
+} from "@/server/jobs/jobs.functions";
 import { queryOptions } from "@tanstack/react-query";
 
 export const jobQueryOptions = (id: JobId) =>
@@ -19,4 +24,10 @@ export const jobReommendOptions = (id: CandidateId) =>
   queryOptions({
     queryKey: ["jobsRecommend", id],
     queryFn: () => getJobRecommendation({ data: id }),
+  });
+
+export const savedJobsQueryOptions = (candidateId: CandidateId) =>
+  queryOptions({
+    queryKey: ["savedJobs", candidateId],
+    queryFn: () => getSavedJobs({ data: candidateId }),
   });

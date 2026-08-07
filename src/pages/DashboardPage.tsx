@@ -32,7 +32,6 @@ export function DashboardPage() {
     intsQueryOptions({ candidateId: user?.id }),
   );
   const interviews = intResponse?.data?.items ?? null;
-  console.log(interviews);
 
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],

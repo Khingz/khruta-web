@@ -1,6 +1,7 @@
-import { JobFilters, JobId } from "@/schemas/job.schemas";
+import { JobFilters, JobId, savedJobFilters } from "@/schemas/job.schemas";
 import { getSalesforceToken } from "../salesforce.server";
 import { CandidateId } from "@/schemas/candidate.schemas";
+import { auth } from "@clerk/tanstack-react-start/server";
 
 export async function getJobOpenings(filters: JobFilters) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
@@ -53,6 +54,30 @@ export async function getRecommendedJobs(id: CandidateId) {
     const errorBody = await res.text();
     console.error(`Salesforce error (${res.status}):`, errorBody);
     throw new Error(`Failed to fetch job opening (${res.status}): ${errorBody}`);
+  }
+  return res.json();
+}
+
+export async function getUserSavedJobs(candidateId: CandidateId) {
+  const { accessToken, instanceUrl } = await getSalesforceToken();
+  const params = new URLSearchParams();
+
+  const { userId, isAuthenticated } = await auth();
+
+  if (!isAuthenticated || !userId) {
+    throw new Error("Unauthorized");
+  }
+
+  params.set("candidateId", candidateId);
+
+  const res = await fetch(`${instanceUrl}/services/apexrest/savedJobs/?${params.toString()}`, {
+    headers: { Authorization: `Bearer ${accessToken}`, "X-Verified-Clerk-Id": userId },
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    console.error(`Salesforce error (${res.status}):`, errorBody);
+    throw new Error(`Failed to fetch jobs (${res.status}): ${errorBody}`);
   }
   return res.json();
 }
