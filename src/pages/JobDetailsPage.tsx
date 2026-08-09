@@ -13,7 +13,7 @@ import { useAuth } from "@clerk/tanstack-react-start";
 export function JobDetailsPage() {
   const { id } = useParams({ from: "/jobs/$id" });
   const { data: response, isLoading } = useQuery(jobQueryOptions(id));
-  const job = response && response.data;
+  const job = response.data || [];
   const { isSignedIn } = useAuth();
   const navigate = useNavigate();
 

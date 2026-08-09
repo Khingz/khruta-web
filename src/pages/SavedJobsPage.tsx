@@ -16,15 +16,13 @@ export function SavedJobsPage() {
   const user = currentUser?.data ?? null;
 
   const { data: response, isLoading } = useQuery(savedJobsQueryOptions(user?.id));
-  const job = response?.data ?? [];
-
-  console.log(response);
+  const jobs = response?.data ?? [];
 
   return (
     <DashboardLayout title="Saved jobs" subtitle="The roles you've kept for later.">
       {isLoading ? (
         <LoadingSpinner />
-      ) : job.length === 0 ? (
+      ) : jobs.length === 0 ? (
         <EmptyState
           icon={<Bookmark className="h-5 w-5" />}
           title="No saved jobs yet"
@@ -37,7 +35,7 @@ export function SavedJobsPage() {
         />
       ) : (
         <div className="grid sm:grid-cols-2 gap-3">
-          {job.map((j: any) => (
+          {jobs.map((j: any) => (
             <JobCard
               key={j.Id}
               job={{
