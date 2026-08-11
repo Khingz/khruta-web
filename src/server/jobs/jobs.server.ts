@@ -2,6 +2,7 @@ import { JobFilters, JobId, savedJobFilters } from "@/schemas/job.schemas";
 import { getSalesforceToken } from "../salesforce.server";
 import { CandidateId } from "@/schemas/candidate.schemas";
 import { auth } from "@clerk/tanstack-react-start/server";
+import { AddSaveJobPayload } from "@/types";
 
 export async function getJobOpenings(filters: JobFilters) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
@@ -80,4 +81,43 @@ export async function getUserSavedJobs(candidateId: CandidateId) {
     throw new Error(`Failed to fetch jobs (${res.status}): ${errorBody}`);
   }
   return res.json();
+}
+
+export async function toggleSavedJob(data: AddSaveJobPayload) {
+  const { accessToken, instanceUrl } = await getSalesforceToken();
+  const { userId, isAuthenticated } = await auth();
+
+  if (!isAuthenticated || !userId) {
+    throw new Error("Unauthorized");
+  }
+
+  const res = await fetch(`${instanceUrl}/services/apexrest/savedJobs/`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "X-Verified-Clerk-Id": userId,
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  if (!res.ok) {
+    const errorBody = await res.text();
+    let detail: unknown;
+    try {
+      detail = JSON.parse(errorBody);
+    } catch {
+      detail = errorBody;
+    }
+
+    console.error("Salesforce upsert failed", { status: res.status, detail });
+    throw new Error(
+      `Salesforce upsert failed (${res.status}): ${
+        typeof detail === "string" ? detail : JSON.stringify(detail)
+      }`,
+    );
+  }
+
+  const response = res.json();
+  return response;
 }

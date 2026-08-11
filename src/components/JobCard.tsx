@@ -4,25 +4,12 @@ import type { Job } from "@/types";
 import { formatSalary, timeAgo, cn } from "@/utils/format";
 import { Badge } from "./primitives/Badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { jobsApi } from "@/api/jobsApi";
 import { savedJobsQueryOptions } from "@/queries/job.queries";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { savedJobToggle } from "@/server/jobs/jobs.functions";
 
 export function JobCard({ job, compact = false }: { job: Job; compact?: boolean }) {
   const qc = useQueryClient();
-  const { data: savedIds = [] } = useQuery({
-    queryKey: ["savedIds"],
-    queryFn: () => jobsApi.getSavedIds(),
-    staleTime: 0,
-  });
-  const saved = savedIds.includes(job.id);
-  const toggle = useMutation({
-    mutationFn: () => jobsApi.toggleSave(job.id),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["savedIds"] });
-      qc.invalidateQueries({ queryKey: ["savedJobs"] });
-    },
-  });
   //Get current user data
   const { data: currentUser } = useQuery(candidateProfileQuery);
   const user = currentUser?.data ?? null;
@@ -31,6 +18,16 @@ export function JobCard({ job, compact = false }: { job: Job; compact?: boolean 
   const { data: savedJob, isLoading } = useQuery(savedJobsQueryOptions(user?.id));
 
   const isSaved = savedJob?.data.some((obj: any) => obj.Id === job.id);
+
+  const toggle = useMutation({
+    mutationFn: () =>
+      savedJobToggle({
+        data: { jobOpeningId: job.id, candidateId: user?.id },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["savedJobs", user?.id] });
+    },
+  });
 
   return (
     <Link
@@ -62,7 +59,7 @@ export function JobCard({ job, compact = false }: { job: Job; compact?: boolean 
               aria-label={isSaved ? "Unsave job" : "Save job"}
               className={cn(
                 "h-9 w-9 grid place-items-center rounded-lg border transition-colors",
-                saved
+                isSaved
                   ? "border-[#5B3FD6] bg-[#EEF0FB] text-[#5B3FD6]"
                   : "border-[#E5E7EB] text-[#6B7280] hover:text-[#5B3FD6] hover:border-[#C7D2FE]",
               )}
