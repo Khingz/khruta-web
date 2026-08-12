@@ -73,3 +73,8 @@ export type ApplyPayload = {
   currentEmployer?: string;
   currentRole?: string;
 };
+
+export type AddSaveJobPayload = {
+  jobOpeningId: string;
+  candidateId: string;
+};

@@ -25,7 +25,7 @@ export const createApp = createServerFn({ method: "POST" })
       throw new Error("Not authenticated");
     }
 
-    const updated = await createApplication(data);
+    const app = await createApplication(data);
 
-    return updated;
+    return app;
   });

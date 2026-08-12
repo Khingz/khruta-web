@@ -18,3 +18,14 @@ export type JobId = z.infer<typeof JobIdSchema>;
 export const JobIdSchema = z
   .string()
   .regex(/^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/, "Invalid Salesforce ID format");
+
+export const savedJobFilterSchema = z.object({
+  candidateId: z
+    .string()
+    .regex(/^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/, "Invalid Salesforce candidate ID format"),
+  jobOpeningId: z
+    .string()
+    .regex(/^[a-zA-Z0-9]{15}([a-zA-Z0-9]{3})?$/, "Invalid Salesforce job ID format"),
+});
+
+export type savedJobFilters = z.infer<typeof savedJobFilterSchema>;

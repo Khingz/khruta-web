@@ -4,21 +4,28 @@ import type { Job } from "@/types";
 import { formatSalary, timeAgo, cn } from "@/utils/format";
 import { Badge } from "./primitives/Badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { jobsApi } from "@/api/jobsApi";
+import { savedJobsQueryOptions } from "@/queries/job.queries";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { savedJobToggle } from "@/server/jobs/jobs.functions";
 
 export function JobCard({ job, compact = false }: { job: Job; compact?: boolean }) {
   const qc = useQueryClient();
-  const { data: savedIds = [] } = useQuery({
-    queryKey: ["savedIds"],
-    queryFn: () => jobsApi.getSavedIds(),
-    staleTime: 0,
-  });
-  const saved = savedIds.includes(job.id);
+  //Get current user data
+  const { data: currentUser } = useQuery(candidateProfileQuery);
+  const user = currentUser?.data ?? null;
+
+  // saved jobs
+  const { data: savedJob, isLoading } = useQuery(savedJobsQueryOptions(user?.id));
+
+  const isSaved = savedJob?.data.some((obj: any) => obj.Id === job.id);
+
   const toggle = useMutation({
-    mutationFn: () => jobsApi.toggleSave(job.id),
+    mutationFn: () =>
+      savedJobToggle({
+        data: { jobOpeningId: job.id, candidateId: user?.id },
+      }),
     onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["savedIds"] });
-      qc.invalidateQueries({ queryKey: ["savedJobs"] });
+      qc.invalidateQueries({ queryKey: ["savedJobs", user?.id] });
     },
   });
 
@@ -49,15 +56,15 @@ export function JobCard({ job, compact = false }: { job: Job; compact?: boolean 
                 e.stopPropagation();
                 toggle.mutate();
               }}
-              aria-label={saved ? "Unsave job" : "Save job"}
+              aria-label={isSaved ? "Unsave job" : "Save job"}
               className={cn(
                 "h-9 w-9 grid place-items-center rounded-lg border transition-colors",
-                saved
+                isSaved
                   ? "border-[#5B3FD6] bg-[#EEF0FB] text-[#5B3FD6]"
                   : "border-[#E5E7EB] text-[#6B7280] hover:text-[#5B3FD6] hover:border-[#C7D2FE]",
               )}
             >
-              <Bookmark className={cn("h-4 w-4", saved && "fill-current")} />
+              <Bookmark className={cn("h-4 w-4", isSaved && "fill-current")} />
             </button>
           </div>
           <div className="mt-3 flex flex-wrap gap-x-4 gap-y-1.5 text-xs text-[#6B7280]">

@@ -32,7 +32,6 @@ export function DashboardPage() {
     intsQueryOptions({ candidateId: user?.id }),
   );
   const interviews = intResponse?.data?.items ?? null;
-  console.log(interviews);
 
   const { data: savedIds = [] } = useQuery({
     queryKey: ["savedIds"],
@@ -178,11 +177,6 @@ export function DashboardPage() {
               <ul className="space-y-3">
                 {interviews.map((a: any) => (
                   <li key={a.id} className="p-3 rounded-lg bg-[#F8F7FF] border border-[#E0E7FF]">
-                    {/* <p className="text-sm font-medium">{a.jobName}</p>
-                    <p className="text-xs text-[#6B7280]">{a.companyName}</p>
-                    <p className="text-xs mt-1.5 text-[#5B3FD6] font-medium">
-                      {formatDateTime(a.interviewDate!)}
-                    </p> */}
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="text-sm font-medium">{a.jobName}</p>
