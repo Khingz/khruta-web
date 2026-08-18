@@ -10,8 +10,8 @@ import { formatDate } from "@/utils/format";
 import { useToast } from "@/components/Toast";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
-import { OfferResponsePayload } from "@/types";
 import { offerResponse } from "@/server/applications/applications.function";
+import { useState } from "react";
 
 const TONE: Record<string, any> = { Pending: "warning", Accepted: "success", Rejected: "default" };
 
@@ -29,6 +29,10 @@ export function OffersPage() {
   );
   const offers = items?.data?.items ?? [];
 
+  // tracks which job ids the user has just responded to, so buttons hide instantly
+  // temporary fix - plan to use optimistic update
+  const [responded, setResponded] = useState<Record<string, boolean>>({});
+
   const response = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "accept" | "reject" }) =>
       offerResponse({
@@ -38,6 +42,7 @@ export function OffersPage() {
         },
       }),
     onSuccess: (_, v) => {
+      setResponded((prev) => ({ ...prev, [v.id]: true }));
       qc.invalidateQueries({ queryKey: ["applications", { candidateId: user?.id, offers: true }] });
       push({ tone: "success", title: v.action === "accept" ? "Offer accepted" : "Offer Rejected" });
     },
@@ -88,17 +93,18 @@ export function OffersPage() {
                         <span>Expires {formatDate(job.offerExpiry)}</span>
                       </div>
                     </div>
-                    {job.offerAcceptanceStatus === "Pending" && (
+                    {job.offerAcceptanceStatus === "Pending" && !responded[job.id] && (
                       <div className="mt-5 flex gap-2">
                         <Button
                           onClick={() => response.mutate({ id: job.id, action: "accept" })}
-                          loading={response.isPending}
+                          loading={response.isPending && response.variables?.action === "accept"}
                         >
                           Accept
                         </Button>
                         <Button
                           variant="outline"
                           onClick={() => response.mutate({ id: job.id, action: "reject" })}
+                          loading={response.isPending && response.variables?.action === "reject"}
                         >
                           Reject
                         </Button>
