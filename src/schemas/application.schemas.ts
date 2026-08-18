@@ -3,6 +3,7 @@ import { z } from "zod";
 export const AppFiltersSchema = z.object({
   q: z.string().optional(),
   pageSize: z.number().optional(),
+  offers: z.boolean().optional(),
   candidateId: z.string(),
   stage: z.string().optional(),
 });

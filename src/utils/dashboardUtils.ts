@@ -37,13 +37,21 @@ export const dashboardItems = [
   {
     to: "/applications",
     label: "Applications",
+    slug: "applications",
     icon: Briefcase,
-    getValue: (items?: unknown[]) => items?.length ?? 0,
   },
-  { to: "/saved", label: "Saved jobs", icon: Bookmark, getValue: (_items?: unknown[]) => 6 },
-  { to: "/offers", label: "Offers", icon: Gift, getValue: (_items?: unknown[]) => 6 },
-  { to: "/settings", label: "Settings", icon: Settings, getValue: (_items?: unknown[]) => 6 },
+  {
+    to: "/saved",
+    label: "Saved jobs",
+    slug: "savedJobs",
+    icon: Bookmark,
+  },
+  { to: "/offers", label: "Offers", icon: Gift },
 ];
+
+export function getCount(items?: unknown[]): number {
+  return items?.length ?? 0;
+}
 
 export const STATUSES = [
   "All",

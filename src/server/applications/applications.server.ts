@@ -16,6 +16,7 @@ export async function getUserApplications(filters: AppFilters) {
   params.set("candidateId", filters.candidateId);
   if (filters.pageSize) params.set("pageSize", String(filters.pageSize));
   if (filters.stage) params.set("stage", String(filters.stage));
+  if (filters.offers) params.set("offers", String(filters.offers));
 
   const res = await fetch(`${instanceUrl}/services/apexrest/applications/?${params.toString()}`, {
     headers: {

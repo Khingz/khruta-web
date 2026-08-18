@@ -9,11 +9,11 @@ import { jobsApi } from "@/api/jobsApi";
 import { ArrowRight, Link as LinkIcon } from "lucide-react";
 import { Badge } from "@/components/primitives/Badge";
 import { formatDateTime, timeAgo } from "@/utils/format";
-import { dashboardItems, items, STATUS_TONE } from "@/utils/dashboardUtils";
+import { dashboardItems, getCount, items, STATUS_TONE } from "@/utils/dashboardUtils";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
-import { jobReommendOptions } from "@/queries/job.queries";
+import { jobReommendOptions, savedJobsQueryOptions } from "@/queries/job.queries";
 import { intsQueryOptions } from "@/queries/interview.queries";
 import { Link } from "@tanstack/react-router";
 
@@ -27,23 +27,22 @@ export function DashboardPage() {
   );
   const apps = response?.data?.items ?? null;
 
+  // Saved jobs
+  const { data: savedJob, isLoading: savedJObs } = useQuery(savedJobsQueryOptions(user?.id));
+  const sJobs = savedJob?.data ?? [];
+
   //interviews
   const { data: intResponse, isLoading: intLoading } = useQuery(
     intsQueryOptions({ candidateId: user?.id }),
   );
   const interviews = intResponse?.data?.items ?? null;
 
-  const { data: savedIds = [] } = useQuery({
-    queryKey: ["savedIds"],
-    queryFn: () => jobsApi.getSavedIds(),
-    staleTime: 0,
-  });
-  const { data: offers = [] } = useQuery({ queryKey: ["offers"], queryFn: () => offersApi.list() });
+  const dataBySlug: Record<string, unknown[] | undefined> = {
+    applications: apps,
+    savedJobs: sJobs,
+  };
 
-  const { data: notes = [] } = useQuery({
-    queryKey: ["notifications"],
-    queryFn: () => notificationsApi.list(),
-  });
+  const { data: offers = [] } = useQuery({ queryKey: ["offers"], queryFn: () => offersApi.list() });
 
   const { data: recomendResponse, isLoading: recommendLoading } = useQuery(
     jobReommendOptions(user?.id),
@@ -63,7 +62,7 @@ export function DashboardPage() {
       title={`Welcome back, ${user?.fullname?.split(" ")[0] ?? ""}`}
       subtitle="Here's the state of your job search today."
     >
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
         {dashboardItems.map((stat, i) => (
           <Link
             key={stat.label}
@@ -74,7 +73,9 @@ export function DashboardPage() {
             <span className="h-9 w-9 grid place-items-center rounded-lg bg-[#EEF0FB] text-[#5B3FD6]">
               <stat.icon className="h-4 w-4" />
             </span>
-            <p className="mt-3 font-display text-2xl font-bold">{stat.getValue(apps) ?? 0}</p>
+            <p className="mt-3 font-display text-2xl font-bold">
+              {stat.slug ? getCount(dataBySlug[stat.slug]) : 0}
+            </p>
             <p className="text-xs text-[#6B7280] mt-0.5">{stat.label}</p>
           </Link>
         ))}
