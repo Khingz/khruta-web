@@ -10,6 +10,8 @@ import { formatDate } from "@/utils/format";
 import { useToast } from "@/components/Toast";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
+import { OfferResponsePayload } from "@/types";
+import { offerResponse } from "@/server/applications/applications.function";
 
 const TONE: Record<string, any> = { Pending: "warning", Accepted: "success", Rejected: "default" };
 
@@ -22,18 +24,22 @@ export function OffersPage() {
   const user = currentUser?.data ?? null;
 
   //application
-  const { data: response, isLoading } = useQuery(
+  const { data: items, isLoading } = useQuery(
     appsQueryOptions({ candidateId: user?.id, offers: true }),
   );
-  const offers = response?.data?.items ?? [];
-  console.log(offers);
+  const offers = items?.data?.items ?? [];
 
-  const respond = useMutation({
-    mutationFn: ({ id, action }: { id: string; action: "accept" | "decline" }) =>
-      offersApi.respond(id, action),
+  const response = useMutation({
+    mutationFn: ({ id, action }: { id: string; action: "accept" | "reject" }) =>
+      offerResponse({
+        data: {
+          id,
+          data: { isAccept: action === "accept" ? true : false },
+        },
+      }),
     onSuccess: (_, v) => {
-      qc.invalidateQueries({ queryKey: ["offers"] });
-      push({ tone: "success", title: v.action === "accept" ? "Offer accepted" : "Offer declined" });
+      qc.invalidateQueries({ queryKey: ["applications", { candidateId: user?.id, offers: true }] });
+      push({ tone: "success", title: v.action === "accept" ? "Offer accepted" : "Offer Rejected" });
     },
   });
 
@@ -85,16 +91,16 @@ export function OffersPage() {
                     {job.offerAcceptanceStatus === "Pending" && (
                       <div className="mt-5 flex gap-2">
                         <Button
-                          onClick={() => respond.mutate({ id: job.id, action: "accept" })}
-                          loading={respond.isPending}
+                          onClick={() => response.mutate({ id: job.id, action: "accept" })}
+                          loading={response.isPending}
                         >
-                          Accept offer
+                          Accept
                         </Button>
                         <Button
                           variant="outline"
-                          onClick={() => respond.mutate({ id: job.id, action: "decline" })}
+                          onClick={() => response.mutate({ id: job.id, action: "reject" })}
                         >
-                          Decline
+                          Reject
                         </Button>
                       </div>
                     )}
