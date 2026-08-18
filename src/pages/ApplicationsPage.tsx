@@ -19,6 +19,7 @@ export function ApplicationsPage() {
   const qc = useQueryClient();
   const { push } = useToast();
   const [filter, setFilter] = useState<(typeof STATUSES)[number]>("All");
+
   const { candidateId } = Route.useRouteContext();
 
   //application

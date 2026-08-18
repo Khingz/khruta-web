@@ -78,3 +78,7 @@ export type AddSaveJobPayload = {
   jobOpeningId: string;
   candidateId: string;
 };
+
+export type OfferResponsePayload = {
+  isAccept: boolean;
+};

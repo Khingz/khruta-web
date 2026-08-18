@@ -4,7 +4,6 @@ import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { jobsApi } from "@/api/jobsApi";
 import { Bookmark } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { savedJobsQueryOptions } from "@/queries/job.queries";

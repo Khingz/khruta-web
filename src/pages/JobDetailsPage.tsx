@@ -20,7 +20,6 @@ export function JobDetailsPage() {
   const { push } = useToast();
 
   const saved = true;
-  // const saved = savedIds.includes(job.id);
 
   const onApply = () =>
     isSignedIn
