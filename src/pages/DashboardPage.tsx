@@ -31,6 +31,10 @@ export function DashboardPage() {
   const { data: savedJob, isLoading: savedJObs } = useQuery(savedJobsQueryOptions(user?.id));
   const sJobs = savedJob?.data ?? [];
 
+  // Offers
+  const { data: offerResponse, isLoading } = useQuery(savedJobsQueryOptions(user?.id));
+  const offers = offerResponse?.data ?? [];
+
   //interviews
   const { data: intResponse, isLoading: intLoading } = useQuery(
     intsQueryOptions({ candidateId: user?.id }),
@@ -40,9 +44,8 @@ export function DashboardPage() {
   const dataBySlug: Record<string, unknown[] | undefined> = {
     applications: apps,
     savedJobs: sJobs,
+    offers,
   };
-
-  const { data: offers = [] } = useQuery({ queryKey: ["offers"], queryFn: () => offersApi.list() });
 
   const { data: recomendResponse, isLoading: recommendLoading } = useQuery(
     jobReommendOptions(user?.id),
@@ -85,7 +88,7 @@ export function DashboardPage() {
         <div className="lg:col-span-2 space-y-6">
           <section className="surface-card p-6">
             <div className="flex items-center justify-between mb-4">
-              <h2 className="font-display text-lg font-semibold">Recent applications</h2>
+              <h2 className="font-display text-lg font-semibold">Your Applications</h2>
               <Link
                 to="/applications"
                 search={{ candidateId: user?.id }}
@@ -142,7 +145,7 @@ export function DashboardPage() {
               {!recommendLoading && recommended.length > 0 ? (
                 recommended.slice(0, 4).map((job: any) => (
                   <JobCard
-                    key={job.id}
+                    key={job.Id}
                     job={{
                       id: job.Id,
                       title: job.Title,
