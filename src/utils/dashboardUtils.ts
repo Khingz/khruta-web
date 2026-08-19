@@ -46,7 +46,7 @@ export const dashboardItems = [
     slug: "savedJobs",
     icon: Bookmark,
   },
-  { to: "/offers", label: "Offers", icon: Gift },
+  { to: "/offers", label: "Offers", slug: "offers", icon: Gift },
 ];
 
 export function getCount(items?: unknown[]): number {
