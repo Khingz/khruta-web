@@ -25,7 +25,7 @@ export function Pagination({
       onClick={onClick}
       disabled={disabled}
       className={cn(
-        "h-9 min-w-9 px-3 rounded-lg text-sm border transition-colors",
+        "h-9 min-w-9 px-3 rounded-lg text-sm border transition-colors cursor-pointer",
         active
           ? "gradient-brand text-white border-transparent"
           : "bg-white border-[#E5E7EB] text-[#1F2937] hover:bg-[#F8FAFC]",
