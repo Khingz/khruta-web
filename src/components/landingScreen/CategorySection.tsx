@@ -1,3 +1,4 @@
+import { useInView } from "@/hooks/use-inview";
 import { Link } from "@tanstack/react-router";
 import {
   Code2,
@@ -33,8 +34,15 @@ const CATEGORIES = [
 ];
 
 export const CategorySection = () => {
+  const { ref, isInView } = useInView();
+
   return (
-    <div>
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         <div className="text-center mb-10">
           <h2 className="font-display text-2xl sm:text-3xl font-bold">Browse by category</h2>

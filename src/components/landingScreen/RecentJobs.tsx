@@ -2,10 +2,17 @@ import { Link } from "@tanstack/react-router";
 import { ArrowRight } from "lucide-react";
 import { JobCard } from "../JobCard";
 import { RecentJobsSkeleton } from "../loadingSpinners/RecentJobSkeleton";
+import { useInView } from "@/hooks/use-inview";
 
 export const RecentJobs = ({ recentJobs, isLoading }: any) => {
+  const { ref, isInView } = useInView();
   return (
-    <div>
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-3 mb-6">
         <div className="min-w-0">
           <h2 className="font-display text-2xl sm:text-3xl font-bold">Most Recent Opportunities</h2>

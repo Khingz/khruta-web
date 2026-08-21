@@ -34,7 +34,7 @@ export function JobCard({ job, compact = false }: { job: Job; compact?: boolean 
       to="/jobs/$id"
       params={{ id: job.id }}
       className={cn(
-        "group block surface-card p-5 hover:shadow-lift hover:border-[#C7D2FE] transition-all",
+        "group block surface-card p-5 hover:shadow-lift hover:border-[#C7D2FE] transition-all transition-transform duration-300 ease-out hover:scale-105 hover:shadow-lg",
         compact && "p-4",
       )}
     >

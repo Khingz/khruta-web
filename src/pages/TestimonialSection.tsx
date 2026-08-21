@@ -1,3 +1,4 @@
+import { useInView } from "@/hooks/use-inview";
 import { Quote } from "lucide-react";
 
 const testimonials = [
@@ -19,14 +20,24 @@ const testimonials = [
 ];
 
 export const TestimonialSection = () => {
+  const { ref, isInView } = useInView();
+
   return (
-    <div>
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <div className="text-center mb-12">
         <h2 className="font-display text-3xl sm:text-4xl font-bold">Loved by candidates</h2>
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         {testimonials.map((t) => (
-          <div key={t.name} className="surface-card p-7">
+          <div
+            key={t.name}
+            className="surface-card p-7 hover:shadow-lift hover:border-[#C7D2FE] transition-all"
+          >
             <Quote className="h-5 w-5 text-[#5B3FD6]" />
             <p className="mt-4 text-[#1F2937] leading-relaxed">"{t.quote}"</p>
             <div className="mt-6 flex items-center gap-3">
