@@ -19,7 +19,6 @@ import {
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
-import { AuthProvider } from "@/contexts/AuthContext";
 import { ToastProvider } from "@/components/Toast";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { ClerkProvider } from "@clerk/tanstack-react-start";
@@ -119,11 +118,9 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <ToastProvider>
-          <Outlet />
-        </ToastProvider>
-      </AuthProvider>
+      <ToastProvider>
+        <Outlet />
+      </ToastProvider>
     </QueryClientProvider>
   );
 }
