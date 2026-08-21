@@ -1,9 +1,14 @@
-import logoImg from "@/assets/khruta-logo.png";
+import { cn } from "@/utils/format";
 
-export function Logo() {
+export function Logo({ footer = false }: { footer?: boolean }) {
   return (
-    <div className="h-24 w-32 lg:h-16 lg:w-48 overflow-hidden rounded-[10px]">
-      <img src={logoImg} alt="Khruta logo" className="h-full w-full object-cover scale-125" />
+    <div
+      className={cn(
+        "lg:h-16 lg:w-48 overflow-hidden flex items-center",
+        footer ? "justify-start" : "justify-center",
+      )}
+    >
+      <img src="/khruta-logo-full.png" alt="Khruta" className="h-12 w-auto" />
     </div>
   );
 }
