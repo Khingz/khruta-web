@@ -3,19 +3,8 @@ import { Badge } from "@/components/primitives/Badge";
 import { Button } from "@/components/primitives/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { applicationsApi } from "@/api/applicationsApi";
 import { Link, useNavigate, useParams } from "@tanstack/react-router";
-import {
-  ArrowLeft,
-  MapPin,
-  Briefcase,
-  Clock,
-  FileText,
-  Mail,
-  Phone,
-  Linkedin,
-  Globe,
-} from "lucide-react";
+import { ArrowLeft, MapPin, Briefcase, Clock, FileText, Mail, Phone } from "lucide-react";
 import { formatSalary, timeAgo } from "@/utils/format";
 import { useToast } from "@/components/Toast";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
@@ -37,11 +26,13 @@ export function ApplicationDetailsPage() {
   const app = response && response.data;
 
   const withdraw = useMutation({
-    mutationFn: () => applicationsApi.withdraw(id),
+    mutationFn: async () => {
+      console.log("mutate");
+    },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applications"] });
       qc.invalidateQueries({ queryKey: ["application", id] });
-      push({ tone: "success", title: "Application withdrawn" });
+      push({ tone: "error", title: "This feature will be added in next roll up" });
     },
   });
 

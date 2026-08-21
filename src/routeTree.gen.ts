@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as SavedRouteImport } from './routes/saved'
-import { Route as ResumeRouteImport } from './routes/resume'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OffersRouteImport } from './routes/offers'
@@ -43,11 +42,6 @@ const SettingsRoute = SettingsRouteImport.update({
 const SavedRoute = SavedRouteImport.update({
   id: '/saved',
   path: '/saved',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ResumeRoute = ResumeRouteImport.update({
-  id: '/resume',
-  path: '/resume',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -142,7 +136,6 @@ export interface FileRoutesByFullPath {
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
@@ -164,7 +157,6 @@ export interface FileRoutesByTo {
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
@@ -187,7 +179,6 @@ export interface FileRoutesById {
   '/offers': typeof OffersRoute
   '/privacy': typeof PrivacyRoute
   '/register': typeof RegisterRoute
-  '/resume': typeof ResumeRoute
   '/saved': typeof SavedRoute
   '/settings': typeof SettingsRoute
   '/terms': typeof TermsRoute
@@ -211,7 +202,6 @@ export interface FileRouteTypes {
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/resume'
     | '/saved'
     | '/settings'
     | '/terms'
@@ -233,7 +223,6 @@ export interface FileRouteTypes {
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/resume'
     | '/saved'
     | '/settings'
     | '/terms'
@@ -255,7 +244,6 @@ export interface FileRouteTypes {
     | '/offers'
     | '/privacy'
     | '/register'
-    | '/resume'
     | '/saved'
     | '/settings'
     | '/terms'
@@ -278,7 +266,6 @@ export interface RootRouteChildren {
   OffersRoute: typeof OffersRoute
   PrivacyRoute: typeof PrivacyRoute
   RegisterRoute: typeof RegisterRoute
-  ResumeRoute: typeof ResumeRoute
   SavedRoute: typeof SavedRoute
   SettingsRoute: typeof SettingsRoute
   TermsRoute: typeof TermsRoute
@@ -311,13 +298,6 @@ declare module '@tanstack/react-router' {
       path: '/saved'
       fullPath: '/saved'
       preLoaderRoute: typeof SavedRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/resume': {
-      id: '/resume'
-      path: '/resume'
-      fullPath: '/resume'
-      preLoaderRoute: typeof ResumeRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -446,7 +426,6 @@ const rootRouteChildren: RootRouteChildren = {
   OffersRoute: OffersRoute,
   PrivacyRoute: PrivacyRoute,
   RegisterRoute: RegisterRoute,
-  ResumeRoute: ResumeRoute,
   SavedRoute: SavedRoute,
   SettingsRoute: SettingsRoute,
   TermsRoute: TermsRoute,
