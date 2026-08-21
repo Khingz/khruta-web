@@ -10,7 +10,7 @@ import { CTASection } from "@/components/landingScreen/CTASection";
 import { jobsQueryOptions } from "@/queries/job.queries";
 
 export function LandingPage() {
-  const { data: response, isLoading } = useQuery(jobsQueryOptions());
+  const { data: response, isLoading } = useQuery(jobsQueryOptions({ pageSize: 6 }));
   const recentJobs = response?.data?.items ?? null;
 
   return (
@@ -19,32 +19,26 @@ export function LandingPage() {
       <section className="relative overflow-hidden">
         <HeroSection />
       </section>
-
       {/* Recent jobs */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-12 sm:py-16">
         {<RecentJobs recentJobs={recentJobs} isLoading={isLoading} />}
       </section>
-
       {/* Categories */}
       <section className="bg-[#F8FAFC] border-y border-[#E5E7EB]">
         <CategorySection />
       </section>
-
-      {/* Why Khruta */}
+      {/* Why Khruta */}5+ years product management; Technical background; Agile experience
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <FeaturesSection />
       </section>
-
       {/* How it works */}
       <section className="bg-[#F8FAFC] border-y border-[#E5E7EB]">
         <HowSection />
       </section>
-
       {/* Testimonials */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <TestimonialSection />
       </section>
-
       {/* CTA */}
       <section className="px-4 sm:px-6 pb-16 sm:pb-24">
         <CTASection />
