@@ -1,3 +1,4 @@
+import { useInView } from "@/hooks/use-inview";
 import { Heart, ShieldCheck, Zap } from "lucide-react";
 
 const features = [
@@ -19,8 +20,15 @@ const features = [
 ];
 
 export const FeaturesSection = () => {
+  const { ref, isInView } = useInView();
+
   return (
-    <div>
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <div className="text-center mb-12">
         <h2 className="font-display text-3xl sm:text-4xl font-bold">Why Khruta</h2>
         <p className="text-[#6B7280] mt-3 max-w-2xl mx-auto">
@@ -29,7 +37,10 @@ export const FeaturesSection = () => {
       </div>
       <div className="grid md:grid-cols-3 gap-6">
         {features.map((f) => (
-          <div key={f.title} className="surface-card p-7">
+          <div
+            key={f.title}
+            className="surface-card p-7 hover:shadow-lift hover:border-[#C7D2FE] transition-all"
+          >
             <span className="h-11 w-11 grid place-items-center rounded-xl gradient-brand text-white">
               <f.icon className="h-5 w-5" />
             </span>

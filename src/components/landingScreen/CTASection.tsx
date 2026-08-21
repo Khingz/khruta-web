@@ -1,12 +1,19 @@
 import { Link } from "@tanstack/react-router";
 import { Button } from "../primitives/Button";
 import { useUser } from "@clerk/tanstack-react-start";
+import { useInView } from "@/hooks/use-inview";
 
 export const CTASection = () => {
   const { isSignedIn, isLoaded } = useUser();
+  const { ref, isInView } = useInView();
 
   return (
-    <div>
+    <div
+      ref={ref}
+      className={`transition-all duration-700 ease-out ${
+        isInView ? "opacity-100 translate-y-0" : "opacity-0 translate-y-6"
+      }`}
+    >
       <div
         className="max-w-6xl mx-auto rounded-3xl overflow-hidden relative"
         style={{ backgroundImage: "linear-gradient(135deg,#1B2A6B 0%,#5B3FD6 100%)" }}

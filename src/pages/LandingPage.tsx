@@ -1,6 +1,5 @@
 import { PublicLayout } from "@/components/PublicLayout";
 import { useQuery } from "@tanstack/react-query";
-import { jobsApi } from "@/api/jobsApi";
 import { RecentJobs } from "@/components/landingScreen/RecentJobs";
 import { HeroSection } from "@/components/landingScreen/HeroSection";
 import { CategorySection } from "@/components/landingScreen/CategorySection";
