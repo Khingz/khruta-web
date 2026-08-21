@@ -2,13 +2,11 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/primitives/Button";
 import { Input } from "@/components/primitives/Input";
 import { useState } from "react";
-import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/components/Toast";
 import { Modal } from "@/components/Modal";
 import { useNavigate } from "@tanstack/react-router";
 
 export function SettingsPage() {
-  const { user, logout } = useAuth();
   const { push } = useToast();
   const navigate = useNavigate();
   const [confirm, setConfirm] = useState(false);
@@ -86,8 +84,7 @@ export function SettingsPage() {
             <Button
               variant="danger"
               onClick={async () => {
-                await logout();
-                push({ tone: "success", title: "Account deleted" });
+                push({ tone: "error", title: "This feature is not available yet!!!" });
                 navigate({ to: "/" });
               }}
             >

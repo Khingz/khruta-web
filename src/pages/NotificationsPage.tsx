@@ -4,25 +4,30 @@ import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { notificationsApi } from "@/api/notificationsApi";
 import { Bell, CheckCheck } from "lucide-react";
 
 export function NotificationsPage() {
   const qc = useQueryClient();
   const { data = [], isLoading } = useQuery({
     queryKey: ["notifications"],
-    queryFn: () => notificationsApi.list(),
+    queryFn: () => console.log("Fetched"),
   });
+
   const markAll = useMutation({
-    mutationFn: () => notificationsApi.markAllRead(),
-    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
-  });
-  const markOne = useMutation({
-    mutationFn: (id: string) => notificationsApi.markRead(id),
+    mutationFn: async () => {
+      console.log("mutate");
+    },
     onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
   });
 
-  const unread = data.filter((n) => !n.read).length;
+  const markOne = useMutation({
+    mutationFn: async () => {
+      console.log("mutate");
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ["notifications"] }),
+  });
+
+  const unread = 0;
 
   return (
     <DashboardLayout
@@ -46,12 +51,12 @@ export function NotificationsPage() {
         <EmptyState
           icon={<Bell className="h-5 w-5" />}
           title="No notifications"
-          description="We'll let you know when something happens."
+          description="This feature will be added in the next roll up"
         />
       ) : (
         <div className="space-y-2 max-w-3xl">
-          {data.map((n) => (
-            <NotificationCard key={n.id} n={n} onClick={() => markOne.mutate(n.id)} />
+          {data.map((n, i) => (
+            <NotificationCard key={i} n={n} onClick={() => markOne.mutate()} />
           ))}
         </div>
       )}

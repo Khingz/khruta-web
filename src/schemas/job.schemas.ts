@@ -4,6 +4,7 @@ export const JobFiltersSchema = z.object({
   q: z.string().optional(),
   location: z.string().optional(),
   department: z.string().optional(),
+  experience: z.string().optional(),
   type: z.string().optional(),
   page: z.number().optional(),
   pageSize: z.number().optional(),

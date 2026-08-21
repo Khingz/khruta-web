@@ -22,6 +22,7 @@ export function BrowseJobsPage() {
     q: search.q,
     location: search.location,
     department: search.department,
+    experience: search.experience,
     type: search.type,
     page: search.page ?? 1,
     pageSize: 10,
@@ -32,12 +33,12 @@ export function BrowseJobsPage() {
   const { data: response, isLoading } = useQuery(jobsQueryOptions(filters));
   const jobs = response?.data;
 
-  const setParam = (patch: Partial<JobFilters>) => {
-    const next = { ...search, ...patch, page: 1 };
-    Object.keys(next).forEach((k) => {
-      if ((next as any)[k] === undefined || (next as any)[k] === "") delete (next as any)[k];
+  const setFilters = (next: JobFilters) => {
+    const cleaned: any = { ...next, page: 1 };
+    Object.keys(cleaned).forEach((k) => {
+      if (cleaned[k] === undefined || cleaned[k] === "") delete cleaned[k];
     });
-    navigate({ to: "/jobs", search: next as any });
+    navigate({ to: "/jobs", search: cleaned });
   };
 
   return (
@@ -58,7 +59,7 @@ export function BrowseJobsPage() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 py-8 grid lg:grid-cols-[280px_1fr] gap-8">
         <div className="hidden lg:block">
-          <FilterSidebar filters={filters} onChange={(f) => setParam(f)} />
+          <FilterSidebar filters={filters} onChange={setFilters} isFilterLoading={isLoading} />
         </div>
 
         {isLoading ? (
@@ -129,13 +130,7 @@ export function BrowseJobsPage() {
         <div className="lg:hidden fixed inset-0 z-50 flex">
           <div className="absolute inset-0 bg-black/40" onClick={() => setMobileFilters(false)} />
           <div className="relative ml-auto w-[85%] max-w-sm bg-white h-full overflow-y-auto p-4">
-            <FilterSidebar
-              filters={filters}
-              onChange={(f) => {
-                setParam(f);
-                setMobileFilters(false);
-              }}
-            />
+            <FilterSidebar filters={filters} onChange={setFilters} isFilterLoading={isLoading} />
           </div>
         </div>
       )}

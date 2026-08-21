@@ -1,4 +1,3 @@
-import { CATEGORIES } from "@/api/mockData";
 import { Link } from "@tanstack/react-router";
 import {
   Code2,
@@ -21,6 +20,17 @@ const ICONS: Record<string, any> = {
   Settings2,
   Wallet,
 };
+
+const CATEGORIES = [
+  { slug: "engineering", name: "Engineering", icon: "Code2" },
+  { slug: "design", name: "Design", icon: "Palette" },
+  { slug: "product", name: "Product", icon: "Layers" },
+  { slug: "data", name: "Data & AI", icon: "Database" },
+  { slug: "marketing", name: "Marketing", icon: "Megaphone" },
+  { slug: "sales", name: "Sales", icon: "TrendingUp" },
+  { slug: "operations", name: "Operations", icon: "Settings2" },
+  { slug: "finance", name: "Finance", icon: "Wallet" },
+];
 
 export const CategorySection = () => {
   return (

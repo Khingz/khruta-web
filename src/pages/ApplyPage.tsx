@@ -3,7 +3,6 @@ import { Button } from "@/components/primitives/Button";
 import { Input, Textarea } from "@/components/primitives/Input";
 import { EmptyState } from "@/components/EmptyState";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { profileApi } from "@/api/profileApi";
 import { useParams, Link, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { formatSalary } from "@/utils/format";
@@ -28,8 +27,6 @@ export function ApplyPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { push } = useToast();
-
-  const { data: profile } = useQuery({ queryKey: ["profile"], queryFn: () => profileApi.get() });
 
   const {
     register,
