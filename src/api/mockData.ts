@@ -129,25 +129,6 @@ export const MOCK_PROFILE: Profile = {
   portfolioLink: "https://alex.dev",
 };
 
-export const MOCK_APPLICATIONS: Application[] = MOCK_JOBS.slice(0, 6).map((job, i) => ({
-  id: `app_${i}`,
-  jobId: job.id,
-  job,
-  appliedAt: new Date(Date.now() - i * 86400000 * 2).toISOString(),
-  status: (
-    [
-      "Submitted",
-      "Under Review",
-      "Interview",
-      "Offer",
-      "Rejected",
-      "Under Review",
-    ] as Application["status"][]
-  )[i],
-  nextStep: i === 2 ? "Technical interview" : i === 3 ? "Review offer letter" : undefined,
-  interviewAt: i === 2 ? new Date(Date.now() + 86400000 * 3).toISOString() : undefined,
-}));
-
 export const MOCK_OFFERS: Offer[] = MOCK_JOBS.slice(3, 5).map((job, i) => ({
   id: `offer_${i}`,
   jobId: job.id,
