@@ -1,16 +1,19 @@
 import { PublicLayout } from "@/components/PublicLayout";
 import { Button } from "@/components/primitives/Button";
 import { Badge } from "@/components/primitives/Badge";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useParams, Link, useNavigate, Outlet } from "@tanstack/react-router";
 import { formatSalary, timeAgo } from "@/utils/format";
 import { MapPin, Briefcase, Clock, Bookmark, Share2, Check, ArrowLeft } from "lucide-react";
 import { useToast } from "@/components/Toast";
 import { JobDetailSkeleton } from "@/components/loadingSpinners/JobDetailSkeleton";
-import { jobQueryOptions } from "@/queries/job.queries";
+import { jobQueryOptions, savedJobsQueryOptions } from "@/queries/job.queries";
 import { useAuth } from "@clerk/tanstack-react-start";
+import { candidateProfileQuery } from "@/queries/candidate.queries";
+import { savedJobToggle } from "@/server/jobs/jobs.functions";
 
 export function JobDetailsPage() {
+  const qc = useQueryClient();
   const { id } = useParams({ from: "/jobs/$id" });
   const { data: response, isLoading } = useQuery(jobQueryOptions(id));
   const job = response.data || [];
@@ -19,7 +22,24 @@ export function JobDetailsPage() {
 
   const { push } = useToast();
 
-  const saved = true;
+  // candidate profile
+  const { data: currentUser } = useQuery(candidateProfileQuery);
+  const user = currentUser?.data ?? null;
+
+  // saved job
+  const { data: savedJob } = useQuery(savedJobsQueryOptions(user?.id));
+  const isSaved = savedJob?.data.some((obj: any) => obj.Id === job.Id);
+
+  // Toggle saved job
+  const toggleSaved = useMutation({
+    mutationFn: () =>
+      savedJobToggle({
+        data: { jobOpeningId: job.Id, candidateId: user?.id },
+      }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ["savedJobs", user?.id] });
+    },
+  });
 
   const onApply = () =>
     isSignedIn
@@ -70,7 +90,7 @@ export function JobDetailsPage() {
                   </div>
                 </div>
               </div>
-              <div className="mt-6 flex flex-wrap gap-2">
+              <div className="mt-6 flex flex-wrap gap-2 cursor-pointer">
                 <Button
                   size="lg"
                   onClick={onApply}
@@ -82,10 +102,14 @@ export function JobDetailsPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  onClick={() => console.log("toggle")}
-                  leftIcon={<Bookmark className={saved ? "h-4 w-4 fill-current" : "h-4 w-4"} />}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    toggleSaved.mutate();
+                  }}
+                  leftIcon={<Bookmark className={isSaved ? "h-4 w-4 fill-current" : "h-4 w-4"} />}
                 >
-                  {saved ? "Saved" : "Save"}
+                  {isSaved ? "Saved" : "Save"}
                 </Button>
                 <Button
                   size="lg"
