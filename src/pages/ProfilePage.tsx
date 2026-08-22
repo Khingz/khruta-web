@@ -2,7 +2,7 @@ import { DashboardLayout } from "@/components/DashboardLayout";
 import { ProfileCard } from "@/components/ProfileCard";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { Button } from "@/components/primitives/Button";
-import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Pencil } from "lucide-react";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
