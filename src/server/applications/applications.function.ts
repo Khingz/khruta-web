@@ -4,14 +4,14 @@ import {
   createApplication,
   getApplicationById,
   getUserApplications,
-  updateApplicationOffer,
+  updateApplication,
 } from "./applications.server";
-import { ApplyPayload, OfferResponsePayload } from "@/types";
+import { ApplyPayload, UpdateAppPayload } from "@/types";
 import { auth } from "@clerk/tanstack-react-start/server";
 
 type OfferResponseInput = {
   id: AppId;
-  data: OfferResponsePayload;
+  data: UpdateAppPayload;
 };
 
 export const getUserApps = createServerFn({ method: "GET" })
@@ -40,7 +40,7 @@ export const createApp = createServerFn({ method: "POST" })
     return app;
   });
 
-export const offerResponse = createServerFn({ method: "POST" })
+export const appUpdate = createServerFn({ method: "POST" })
   .validator((input: OfferResponseInput) => input)
   .handler(async ({ data }) => {
     const { isAuthenticated } = await auth();
@@ -49,7 +49,7 @@ export const offerResponse = createServerFn({ method: "POST" })
       throw new Error("Not authenticated");
     }
 
-    const app = await updateApplicationOffer(data.data, data.id);
+    const app = await updateApplication(data.data, data.id);
 
     return app;
   });

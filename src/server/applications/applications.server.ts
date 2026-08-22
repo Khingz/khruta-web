@@ -1,7 +1,7 @@
 import { AppFilters, AppId } from "@/schemas/application.schemas";
 import { getSalesforceToken } from "../salesforce.server";
 import { auth } from "@clerk/tanstack-react-start/server";
-import { ApplyPayload, OfferResponsePayload } from "@/types";
+import { ApplyPayload, UpdateAppPayload } from "@/types";
 
 export async function getUserApplications(filters: AppFilters) {
   const { userId, isAuthenticated } = await auth();
@@ -97,7 +97,7 @@ export async function createApplication(data: ApplyPayload) {
   return response;
 }
 
-export async function updateApplicationOffer(data: OfferResponsePayload, id: AppId) {
+export async function updateApplication(data: UpdateAppPayload, id: AppId) {
   const { accessToken, instanceUrl } = await getSalesforceToken();
   const { userId, isAuthenticated } = await auth();
 
