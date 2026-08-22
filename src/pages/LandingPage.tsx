@@ -27,7 +27,7 @@ export function LandingPage() {
       <section className="bg-[#F8FAFC] border-y border-[#E5E7EB]">
         <CategorySection />
       </section>
-      {/* Why Khruta */}5+ years product management; Technical background; Agile experience
+      {/* Why Khruta */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24">
         <FeaturesSection />
       </section>
