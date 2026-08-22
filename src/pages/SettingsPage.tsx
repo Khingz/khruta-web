@@ -1,6 +1,5 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { Button } from "@/components/primitives/Button";
-import { Input } from "@/components/primitives/Input";
 import { useState } from "react";
 import { useToast } from "@/components/Toast";
 import { Modal } from "@/components/Modal";

@@ -3,21 +3,17 @@ import { Badge } from "@/components/primitives/Badge";
 import { Button } from "@/components/primitives/Button";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { applicationsApi } from "@/api/applicationsApi";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { Briefcase } from "lucide-react";
 import { timeAgo } from "@/utils/format";
 import { useState } from "react";
-import { useToast } from "@/components/Toast";
 import { STATUS_TONE, STATUSES } from "@/utils/dashboardUtils";
-import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
 import { Route } from "@/routes/applications";
 
 export function ApplicationsPage() {
   const qc = useQueryClient();
-  const { push } = useToast();
   const [filter, setFilter] = useState<(typeof STATUSES)[number]>("All");
 
   const { candidateId } = Route.useRouteContext();
