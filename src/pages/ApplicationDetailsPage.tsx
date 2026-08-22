@@ -27,7 +27,7 @@ export function ApplicationDetailsPage() {
 
   const withdraw = useMutation({
     mutationFn: async () => {
-      console.log("mutate");
+      console.log("To be added in next roll up!!!");
     },
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: ["applications"] });
