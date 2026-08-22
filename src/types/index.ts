@@ -79,6 +79,7 @@ export type AddSaveJobPayload = {
   candidateId: string;
 };
 
-export type OfferResponsePayload = {
-  isAccept: boolean;
+export type UpdateAppPayload = {
+  isAccept?: boolean;
+  isWithdraw?: boolean;
 };

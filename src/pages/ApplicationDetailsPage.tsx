@@ -11,6 +11,7 @@ import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { STATUS_TONE, CANDIDATE_STATUSES as STATUSES } from "@/utils/dashboardUtils";
 import { appQueryOptions } from "@/queries/application.queries";
+import { appUpdate } from "@/server/applications/applications.function";
 
 export function ApplicationDetailsPage() {
   const { id } = useParams({ from: "/applications_/$id" });
@@ -22,17 +23,24 @@ export function ApplicationDetailsPage() {
   const qc = useQueryClient();
   const { push } = useToast();
 
+  // Fetch the job
   const { data: response, isLoading } = useQuery(appQueryOptions(id));
   const app = response && response.data;
 
-  const withdraw = useMutation({
-    mutationFn: async () => {
-      console.log("To be added in next roll up!!!");
-    },
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: ["applications"] });
-      qc.invalidateQueries({ queryKey: ["application", id] });
-      push({ tone: "error", title: "This feature will be added in next roll up" });
+  // Mutation to handle withdraw onclick
+  const handleWithdraw = useMutation({
+    mutationFn: () =>
+      appUpdate({
+        data: {
+          id,
+          data: { isWithdraw: true },
+        },
+      }),
+    onSuccess: (_, v) => {
+      qc.invalidateQueries({
+        queryKey: ["applications", id],
+      });
+      push({ tone: "success", title: "You successfully withdraw from this job application" });
     },
   });
 
@@ -211,8 +219,8 @@ export function ApplicationDetailsPage() {
               <Button
                 variant="ghost"
                 className="w-full"
-                onClick={() => withdraw.mutate()}
-                loading={withdraw.isPending}
+                onClick={() => handleWithdraw.mutate()}
+                loading={handleWithdraw.isPending}
               >
                 Withdraw application
               </Button>

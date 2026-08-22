@@ -4,14 +4,13 @@ import { Badge } from "@/components/primitives/Badge";
 import { EmptyState } from "@/components/EmptyState";
 import { LoadingSpinner } from "@/components/loadingSpinners/LoadingSpinner";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { offersApi } from "@/api/offersApi";
 import { Gift, Calendar, Briefcase, Banknote } from "lucide-react";
 import { formatDate } from "@/utils/format";
 import { useToast } from "@/components/Toast";
 import { candidateProfileQuery } from "@/queries/candidate.queries";
 import { appsQueryOptions } from "@/queries/application.queries";
-import { offerResponse } from "@/server/applications/applications.function";
 import { useState } from "react";
+import { appUpdate } from "@/server/applications/applications.function";
 
 const TONE: Record<string, any> = { Pending: "warning", Accepted: "success", Rejected: "default" };
 
@@ -35,7 +34,7 @@ export function OffersPage() {
 
   const response = useMutation({
     mutationFn: ({ id, action }: { id: string; action: "accept" | "reject" }) =>
-      offerResponse({
+      appUpdate({
         data: {
           id,
           data: { isAccept: action === "accept" ? true : false },
