@@ -164,7 +164,7 @@ export function ApplyPage() {
           <section className="surface-card p-6">
             <h3 className="font-display font-semibold mb-1">Cover letter</h3>
             <p className="text-sm text-[#6B7280] mb-3">
-              Tell {job.company} why you're a great fit.
+              Tell {job.Company} why you're a great fit.
             </p>
             <Textarea
               rows={7}
@@ -175,7 +175,7 @@ export function ApplyPage() {
 
           <div className="flex flex-wrap items-center justify-between gap-3">
             <p className="text-xs text-[#6B7280]">
-              By submitting, you agree to share these details with {job.company}.
+              By submitting, you agree to share these details with {job.Company}.
             </p>
             <div className="flex gap-2">
               <Button

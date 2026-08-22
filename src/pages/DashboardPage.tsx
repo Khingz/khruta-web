@@ -1,11 +1,6 @@
 import { DashboardLayout } from "@/components/DashboardLayout";
 import { JobCard } from "@/components/JobCard";
-import { NotificationCard } from "@/components/NotificationCard";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
-import { applicationsApi } from "@/api/applicationsApi";
-import { offersApi } from "@/api/offersApi";
-import { notificationsApi } from "@/api/notificationsApi";
-import { jobsApi } from "@/api/jobsApi";
 import { ArrowRight, Link as LinkIcon } from "lucide-react";
 import { Badge } from "@/components/primitives/Badge";
 import { formatDateTime, timeAgo } from "@/utils/format";
@@ -66,7 +61,7 @@ export function DashboardPage() {
       subtitle="Here's the state of your job search today."
     >
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
-        {dashboardItems.map((stat, i) => (
+        {dashboardItems.map((stat) => (
           <Link
             key={stat.label}
             to={stat.to}
